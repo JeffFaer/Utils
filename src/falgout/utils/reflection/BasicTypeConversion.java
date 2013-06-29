@@ -7,7 +7,7 @@ public enum BasicTypeConversion implements TypeConversion {
 	IDENTITY {
 		@Override
 		public boolean convert(Class<?> from, Class<?> to) {
-			return false;
+			return to.equals(from);
 		}
 	},
 	/**
@@ -43,7 +43,7 @@ public enum BasicTypeConversion implements TypeConversion {
 	WIDENING_REFERENCE {
 		@Override
 		public boolean convert(Class<?> from, Class<?> to) {
-			return false;
+			return from == null || to.isAssignableFrom(from);
 		}
 	},
 	/**
