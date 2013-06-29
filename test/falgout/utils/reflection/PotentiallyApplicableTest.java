@@ -16,6 +16,7 @@ public class PotentiallyApplicableTest {
 	
 	private static final Method varargMethod;
 	private static final Method regularMethod;
+	private static final int arity = 3;
 	static {
 		try {
 			varargMethod = PotentiallyApplicableTest.class.getMethod("foo", Object.class, Object.class, Object[].class);
@@ -36,7 +37,7 @@ public class PotentiallyApplicableTest {
 	public void RegularArityMustBeExact() {
 		for (int x = 0; x < 10; x++) {
 			PotentiallyApplicable a = new PotentiallyApplicable("foo", x);
-			assertEquals(x == 3, a.test(regularMethod));
+			assertEquals(x == arity, a.test(regularMethod));
 		}
 	}
 	
@@ -44,7 +45,7 @@ public class PotentiallyApplicableTest {
 	public void VariableArityMustBeGreaterThanNMinusOne() {
 		for (int x = 0; x < 10; x++) {
 			PotentiallyApplicable a = new PotentiallyApplicable("foo", x);
-			assertEquals(x >= (3 - 1), a.test(varargMethod));
+			assertEquals(x >= (arity - 1), a.test(varargMethod));
 		}
 	}
 }
