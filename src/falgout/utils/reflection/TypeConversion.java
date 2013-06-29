@@ -19,10 +19,14 @@ public interface TypeConversion {
 	 * 
 	 * <b>Note:</b> {@code from} may be {@code null} to represent the
 	 * {@code null} type, but {@code to} should <i>never</i> be {@code null}.
+	 * Providing {@code null} as the {@code to} parameter will result in an
+	 * {@code IllegalArgumentException}.
 	 * 
 	 * @param from The {@code Class} to convert from
 	 * @param to The {@code Class} to convert to
 	 * @return Whether or not the conversion is allowed.
+	 * 
+	 * @throws IllegalArgumentException If {@code to} is {@code null}.
 	 */
 	public boolean convert(Class<?> from, Class<?> to);
 }

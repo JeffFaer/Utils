@@ -6,7 +6,7 @@ public enum BasicTypeConversion implements TypeConversion {
 	 */
 	IDENTITY {
 		@Override
-		public boolean convert(Class<?> from, Class<?> to) {
+		protected boolean doConvert(Class<?> from, Class<?> to) {
 			return to.equals(from);
 		}
 	},
@@ -15,7 +15,7 @@ public enum BasicTypeConversion implements TypeConversion {
 	 */
 	WIDENING_PRIMITIVE {
 		@Override
-		public boolean convert(Class<?> from, Class<?> to) {
+		protected boolean doConvert(Class<?> from, Class<?> to) {
 			return false;
 		}
 	},
@@ -24,7 +24,7 @@ public enum BasicTypeConversion implements TypeConversion {
 	 */
 	NARROWING_PRIMITIVE {
 		@Override
-		public boolean convert(Class<?> from, Class<?> to) {
+		protected boolean doConvert(Class<?> from, Class<?> to) {
 			return false;
 		}
 	},
@@ -33,7 +33,7 @@ public enum BasicTypeConversion implements TypeConversion {
 	 */
 	WIDENING_AND_NARROWING_PRIMITIVE {
 		@Override
-		public boolean convert(Class<?> from, Class<?> to) {
+		protected boolean doConvert(Class<?> from, Class<?> to) {
 			return false;
 		}
 	},
@@ -42,7 +42,7 @@ public enum BasicTypeConversion implements TypeConversion {
 	 */
 	WIDENING_REFERENCE {
 		@Override
-		public boolean convert(Class<?> from, Class<?> to) {
+		protected boolean doConvert(Class<?> from, Class<?> to) {
 			return from == null || to.isAssignableFrom(from);
 		}
 	},
@@ -51,7 +51,7 @@ public enum BasicTypeConversion implements TypeConversion {
 	 */
 	BOXING {
 		@Override
-		public boolean convert(Class<?> from, Class<?> to) {
+		protected boolean doConvert(Class<?> from, Class<?> to) {
 			return false;
 		}
 	},
@@ -60,11 +60,19 @@ public enum BasicTypeConversion implements TypeConversion {
 	 */
 	UNBOXING {
 		@Override
-		public boolean convert(Class<?> from, Class<?> to) {
+		protected boolean doConvert(Class<?> from, Class<?> to) {
 			return false;
 		}
 	};
 	
 	@Override
-	public abstract boolean convert(Class<?> from, Class<?> to);
+	public final boolean convert(Class<?> from, Class<?> to) {
+		if (to == null) {
+			throw new IllegalArgumentException("to == null");
+		}
+		
+		return doConvert(from, to);
+	}
+	
+	protected abstract boolean doConvert(Class<?> from, Class<?> to);
 }

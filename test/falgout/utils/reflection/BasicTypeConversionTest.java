@@ -10,15 +10,25 @@ import org.junit.Test;
 
 public class BasicTypeConversionTest {
 	@Test
-	public void IdentityConversionTest() {
+	public void IdentityTest() {
 		assertTrue(IDENTITY.convert(String.class, String.class));
 		assertFalse(IDENTITY.convert(Object.class, String.class));
 		assertFalse(IDENTITY.convert(String.class, Object.class));
 		assertFalse(IDENTITY.convert(null, String.class));
 	}
 	
+	@Test(expected = IllegalArgumentException.class)
+	public void IdentityFailsWhenToIsNull() {
+		IDENTITY.convert(String.class, null);
+	}
+	
 	@Test
 	public void WideningPrimitiveTest() {
+		fail();
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void WideningPrimitiveFailsWhenToIsNull() {
 		fail();
 	}
 	
@@ -27,8 +37,18 @@ public class BasicTypeConversionTest {
 		fail();
 	}
 	
+	@Test(expected = IllegalArgumentException.class)
+	public void NarrowingPrimitiveFailsWhenToIsNull() {
+		fail();
+	}
+	
 	@Test
 	public void WideningAndNarrowingPrimitiveTest() {
+		fail();
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void WideningAndNarrowingPrimitiveFailsWhenToIsNull() {
 		fail();
 	}
 	
@@ -40,13 +60,28 @@ public class BasicTypeConversionTest {
 		assertFalse(WIDENING_REFERENCE.convert(Object.class, String.class));
 	}
 	
+	@Test(expected = IllegalArgumentException.class)
+	public void WideningReferenceFailsWhenToIsNull() {
+		WIDENING_REFERENCE.convert(String.class, null);
+	}
+	
 	@Test
 	public void BoxingTest() {
 		fail();
 	}
 	
+	@Test(expected = IllegalArgumentException.class)
+	public void BoxingFailsWhenToIsNull() {
+		fail();
+	}
+	
 	@Test
 	public void UnboxingTest() {
+		fail();
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void UnboxingFailsWhenToIsNull() {
 		fail();
 	}
 }
