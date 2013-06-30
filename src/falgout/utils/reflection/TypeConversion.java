@@ -4,8 +4,9 @@ public interface TypeConversion {
 	/**
 	 * Determines if a conversion {@code from} the given class {@code to} the
 	 * other class is allowed via a set of rules.
-	 * 
-	 * Example:
+	 * <br/>
+	 * <br/>
+	 * Example:<br/>
 	 * If this class represented an assignment conversion:
 	 * 
 	 * <pre>
@@ -16,9 +17,10 @@ public interface TypeConversion {
 	 * If this conversion would result in a compiler error, the method would
 	 * return {@code false}. If it is allowed, the method would return
 	 * {@code true}.
-	 * 
+	 * <br/>
+	 * <br/>
 	 * <b>Note:</b> {@code from} may be {@code null} to represent the
-	 * {@code null} type, but {@code to} should <i>never</i> be {@code null}.
+	 * {@code null type}, but {@code to} should <i>never</i> be {@code null}.
 	 * Providing {@code null} as the {@code to} parameter will result in an
 	 * {@code IllegalArgumentException}.
 	 * 
