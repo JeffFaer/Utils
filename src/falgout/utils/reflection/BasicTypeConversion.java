@@ -59,6 +59,9 @@ public enum BasicTypeConversion implements TypeConversion {
 	WIDENING_REFERENCE {
 		@Override
 		protected boolean doConvert(Class<?> from, Class<?> to) {
+			if (to.isPrimitive()) {
+				return false;
+			}
 			return from == null || to.isAssignableFrom(from);
 		}
 	},
