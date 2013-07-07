@@ -9,6 +9,7 @@ import static falgout.utils.reflection.BasicTypeConversion.WIDENING_REFERENCE;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -84,6 +85,12 @@ public class BasicTypeConversionTest {
 		assertFalse(t.convert(Object.class, String.class));
 		
 		assertFalse(t.convert(null, int.class));
+		
+		assertTrue(t.convert(Integer[].class, Object[].class));
+		assertTrue(t.convert(Object[].class, Object.class));
+		assertTrue(t.convert(Object[].class, Cloneable.class));
+		assertTrue(t.convert(Object[].class, Serializable.class));
+		assertFalse(t.convert(Object[].class, Integer[].class));
 	}
 	
 	@Test(expected = IllegalArgumentException.class)

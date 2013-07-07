@@ -13,7 +13,11 @@ public enum CompoundTypeConversion implements TypeConversion {
 	/**
 	 * "http://docs.oracle.com/javase/specs/jls/se7/html/jls-5.html#jls-5.3"
 	 */
-	METHOD_INVOCATION(IDENTITY, WIDENING_REFERENCE, WIDENING_PRIMITIVE, BOXING, UNBOXING);
+	METHOD_INVOCATION(IDENTITY, WIDENING_REFERENCE, WIDENING_PRIMITIVE, BOXING, UNBOXING),
+	/**
+	 * "http://docs.oracle.com/javase/specs/jls/se7/html/jls-4.html#jls-4.10"
+	 */
+	SUBTYPING(IDENTITY, WIDENING_REFERENCE, WIDENING_PRIMITIVE);
 	
 	private final List<TypeConversion> conversions;
 	
