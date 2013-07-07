@@ -3,8 +3,6 @@ package falgout.utils.reflection;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import java.lang.reflect.Method;
-
 import org.junit.Test;
 
 public class PotentiallyApplicableTest {
@@ -14,13 +12,15 @@ public class PotentiallyApplicableTest {
 	public static void foo(Object one, Object two, Object three) {
 	}
 	
-	private static final Method varargMethod;
-	private static final Method regularMethod;
+	private static final Parameterized.Method varargMethod;
+	private static final Parameterized.Method regularMethod;
 	private static final int arity = 3;
 	static {
 		try {
-			varargMethod = PotentiallyApplicableTest.class.getMethod("foo", Object.class, Object.class, Object[].class);
-			regularMethod = PotentiallyApplicableTest.class.getMethod("foo", Object.class, Object.class, Object.class);
+			varargMethod = new Parameterized.Method(PotentiallyApplicableTest.class.getMethod("foo", Object.class,
+					Object.class, Object[].class));
+			regularMethod = new Parameterized.Method(PotentiallyApplicableTest.class.getMethod("foo", Object.class,
+					Object.class, Object.class));
 		} catch (NoSuchMethodException e) {
 			throw new Error(e);
 		}
