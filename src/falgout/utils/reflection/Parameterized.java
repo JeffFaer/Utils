@@ -48,6 +48,13 @@ abstract class Parameterized<M extends AccessibleObject & GenericDeclaration & M
 		public boolean isVarArgs() {
 			return member.isVarArgs();
 		}
+		
+		@Override
+		public String getName() {
+			// Constructor.getName returns the name of the class, but we need
+			// "<init>" for a NoSuchMethodException error message
+			return "<init>";
+		}
 	}
 	
 	public abstract Class<?>[] getParameterTypes();

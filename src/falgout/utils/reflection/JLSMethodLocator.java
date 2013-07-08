@@ -86,21 +86,26 @@ class JLSMethodLocator extends MethodLocator {
 			}
 			
 			if (!applicable.isEmpty()) {
-				Parameterized<M> max = Collections.max(applicable, MethodSpecificity.INSTANCE);
-				Set<M> found = new LinkedHashSet<>();
-				found.add(max.getMember());
-				
-				for (Parameterized<M> p : applicable) {
-					if (MethodSpecificity.INSTANCE.compare(p, max) == 0) {
-						found.add(p.getMember());
-					}
-				}
-				
-				return found;
+				return getMostSpecific(applicable);
 			}
 		}
 		
 		throw new NoSuchMethodException(createMessage(clazz, name, args));
+	}
+	
+	private <M extends AccessibleObject & GenericDeclaration & Member> Set<M> getMostSpecific(
+			Collection<? extends Parameterized<M>> applicable) {
+		Parameterized<M> max = Collections.max(applicable, MethodSpecificity.INSTANCE);
+		Set<M> found = new LinkedHashSet<>();
+		found.add(max.getMember());
+		
+		for (Parameterized<M> p : applicable) {
+			if (MethodSpecificity.INSTANCE.compare(p, max) == 0) {
+				found.add(p.getMember());
+			}
+		}
+		
+		return found;
 	}
 	
 	private String createMessage(Class<?> clazz, String name, Class<?>... args) {
