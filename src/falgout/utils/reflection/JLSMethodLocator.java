@@ -1,6 +1,9 @@
 package falgout.utils.reflection;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,40 +18,25 @@ class JLSMethodLocator extends MethodLocator {
 	@Override
 	protected Method findMethod(Collection<? extends Method> methods, Class<?> clazz, String name, Class<?>... args)
 			throws AmbiguousDeclarationException, NoSuchMethodException {
-		return findParameterized(convertMethods(methods), clazz, name, args).getMethod();
+		return findParameterized(convertMethods(methods), clazz, name, args);
 	}
 	
 	@Override
 	protected Set<Method> findMethods(Collection<? extends Method> methods, Class<?> clazz, String name,
 			Class<?>... args) throws NoSuchMethodException {
-		Set<Parameterized.Method> found = findParameterizeds(convertMethods(methods), clazz, name, args);
-		
-		Set<Method> meths = new LinkedHashSet<>(found.size());
-		for (Parameterized.Method m : found) {
-			meths.add(m.getMethod());
-		}
-		
-		return meths;
+		return findParameterizeds(convertMethods(methods), clazz, name, args);
 	}
 	
 	@Override
 	protected <T> Constructor<T> findConstructor(Collection<? extends Constructor<T>> constructors, Class<T> clazz,
 			Class<?>... args) throws AmbiguousDeclarationException, NoSuchMethodException {
-		return findParameterized(convertConstructors(constructors), clazz, "<init>", args).getConstructor();
+		return findParameterized(convertConstructors(constructors), clazz, "<init>", args);
 	}
 	
 	@Override
 	protected <T> Set<Constructor<T>> findConstructors(Collection<? extends Constructor<T>> constructors,
 			Class<T> clazz, Class<?>... args) throws NoSuchMethodException {
-		Set<Parameterized.Constructor<T>> found = findParameterizeds(convertConstructors(constructors), clazz,
-				"<init>", args);
-		
-		Set<Constructor<T>> ctors = new LinkedHashSet<>(found.size());
-		for (Parameterized.Constructor<T> c : found) {
-			ctors.add(c.getConstructor());
-		}
-		
-		return ctors;
+		return findParameterizeds(convertConstructors(constructors), clazz, "<init>", args);
 	}
 	
 	private List<Parameterized.Method> convertMethods(Collection<? extends Method> methods) {
@@ -67,42 +55,44 @@ class JLSMethodLocator extends MethodLocator {
 		return converted;
 	}
 	
-	private <P extends Parameterized> P findParameterized(Collection<? extends P> parameterizeds, Class<?> clazz,
-			String name, Class<?>... args) throws AmbiguousDeclarationException, NoSuchMethodException {
-		Set<P> found = findParameterizeds(parameterizeds, clazz, name, args);
+	private <M extends AccessibleObject & GenericDeclaration & Member> M findParameterized(
+			Collection<? extends Parameterized<M>> parameterizeds, Class<?> clazz, String name, Class<?>... args)
+			throws AmbiguousDeclarationException, NoSuchMethodException {
+		Set<M> found = findParameterizeds(parameterizeds, clazz, name, args);
 		if (found.size() > 1) {
 			throw new AmbiguousDeclarationException(found.toString());
 		}
 		return found.iterator().next();
 	}
 	
-	private <P extends Parameterized> Set<P> findParameterizeds(Collection<? extends P> parameterizeds, Class<?> clazz,
-			String name, Class<?>... args) throws NoSuchMethodException {
-		Set<P> potentiallyApplicable = new LinkedHashSet<>();
-		Predicate<Parameterized> filter = new PotentiallyApplicable(name, args);
-		for (P p : parameterizeds) {
+	private <M extends AccessibleObject & GenericDeclaration & Member> Set<M> findParameterizeds(
+			Collection<? extends Parameterized<M>> parameterizeds, Class<?> clazz, String name, Class<?>... args)
+			throws NoSuchMethodException {
+		Set<Parameterized<M>> potentiallyApplicable = new LinkedHashSet<>();
+		Predicate<Parameterized<?>> filter = new PotentiallyApplicable(name, args);
+		for (Parameterized<M> p : parameterizeds) {
 			if (filter.test(p)) {
 				potentiallyApplicable.add(p);
 			}
 		}
 		
 		for (Phase phase : Phase.values()) {
-			Set<P> applicable = new LinkedHashSet<>();
+			Set<Parameterized<M>> applicable = new LinkedHashSet<>();
 			
-			for (P p : potentiallyApplicable) {
+			for (Parameterized<M> p : potentiallyApplicable) {
 				if (phase.isApplicable(args, p)) {
 					applicable.add(p);
 				}
 			}
 			
 			if (!applicable.isEmpty()) {
-				P max = Collections.max(applicable, MethodSpecificity.INSTANCE);
-				Set<P> found = new LinkedHashSet<>();
-				found.add(max);
+				Parameterized<M> max = Collections.max(applicable, MethodSpecificity.INSTANCE);
+				Set<M> found = new LinkedHashSet<>();
+				found.add(max.getMember());
 				
-				for (P p : applicable) {
+				for (Parameterized<M> p : applicable) {
 					if (MethodSpecificity.INSTANCE.compare(p, max) == 0) {
-						found.add(p);
+						found.add(p.getMember());
 					}
 				}
 				

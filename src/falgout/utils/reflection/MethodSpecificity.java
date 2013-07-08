@@ -4,7 +4,7 @@ import static falgout.utils.reflection.CompoundTypeConversion.SUBTYPING;
 
 import java.util.Comparator;
 
-enum MethodSpecificity implements Comparator<Parameterized> {
+enum MethodSpecificity implements Comparator<Parameterized<?>> {
 	INSTANCE;
 	/**
 	 * "http://docs.oracle.com/javase/specs/jls/se7/html/jls-15.html#jls-15.12.2.5"
@@ -20,7 +20,7 @@ enum MethodSpecificity implements Comparator<Parameterized> {
 	 * </pre>
 	 */
 	@Override
-	public int compare(Parameterized o1, Parameterized o2) {
+	public int compare(Parameterized<?> o1, Parameterized<?> o2) {
 		if (o1.isVarArgs() && o2.isVarArgs()) {
 			return compareVarArgs(o1, o2);
 		} else if (!o1.isVarArgs() && !o2.isVarArgs()) {
@@ -30,7 +30,7 @@ enum MethodSpecificity implements Comparator<Parameterized> {
 		}
 	}
 	
-	private int compareNormal(Parameterized o1, Parameterized o2) {
+	private int compareNormal(Parameterized<?> o1, Parameterized<?> o2) {
 		int moreSpecific = 0;
 		int lessSpecific = 0;
 		for (int i = 0; i < o1.getParameterTypes().length; i++) {
@@ -57,7 +57,7 @@ enum MethodSpecificity implements Comparator<Parameterized> {
 		}
 	}
 	
-	private int compareVarArgs(Parameterized o1, Parameterized o2) {
+	private int compareVarArgs(Parameterized<?> o1, Parameterized<?> o2) {
 		int max1 = o1.getParameterTypes().length - 1;
 		int max2 = o2.getParameterTypes().length - 1;
 		
@@ -87,7 +87,7 @@ enum MethodSpecificity implements Comparator<Parameterized> {
 				i2++;
 			}
 		}
-
+		
 		return determineResult(moreSpecific, lessSpecific, max);
 	}
 }

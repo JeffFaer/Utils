@@ -5,7 +5,7 @@ import falgout.utils.temp.Predicate;
 /*
  * "http://docs.oracle.com/javase/specs/jls/se7/html/jls-15.html#jls-15.12.2.1"
  */
-class PotentiallyApplicable implements Predicate<Parameterized> {
+class PotentiallyApplicable implements Predicate<Parameterized<?>> {
 	private final String name;
 	private final int arity;
 	
@@ -19,7 +19,7 @@ class PotentiallyApplicable implements Predicate<Parameterized> {
 	}
 	
 	@Override
-	public boolean test(Parameterized t) {
+	public boolean test(Parameterized<?> t) {
 		if (!t.getName().equals(name)) {
 			return false;
 		}

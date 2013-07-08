@@ -1,63 +1,64 @@
 package falgout.utils.reflection;
 
-interface Parameterized {
-	public static class Method implements Parameterized {
-		private final java.lang.reflect.Method m;
-		
-		public Method(java.lang.reflect.Method m) {
-			this.m = m;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.Member;
+
+/**
+ * 
+ * @author jeffrey
+ * 
+ * @param <M> As of JDK 1.7, only Constructor and Method fulfill the boundary
+ *        requirements.
+ */
+abstract class Parameterized<M extends AccessibleObject & GenericDeclaration & Member> {
+	protected final M member;
+	
+	public Parameterized(M member) {
+		this.member = member;
+	}
+	
+	public static class Method extends Parameterized<java.lang.reflect.Method> {
+		public Method(java.lang.reflect.Method member) {
+			super(member);
 		}
 		
 		@Override
 		public Class<?>[] getParameterTypes() {
-			return m.getParameterTypes();
+			return member.getParameterTypes();
 		}
 		
 		@Override
 		public boolean isVarArgs() {
-			return m.isVarArgs();
-		}
-		
-		@Override
-		public String getName() {
-			return m.getName();
-		}
-		
-		public java.lang.reflect.Method getMethod() {
-			return m;
+			return member.isVarArgs();
 		}
 	}
 	
-	public static class Constructor<T> implements Parameterized {
-		private final java.lang.reflect.Constructor<T> c;
-		
-		public Constructor(java.lang.reflect.Constructor<T> c) {
-			this.c = c;
+	public static class Constructor<T> extends Parameterized<java.lang.reflect.Constructor<T>> {
+		public Constructor(java.lang.reflect.Constructor<T> member) {
+			super(member);
 		}
 		
 		@Override
 		public Class<?>[] getParameterTypes() {
-			return c.getParameterTypes();
+			return member.getParameterTypes();
 		}
 		
 		@Override
 		public boolean isVarArgs() {
-			return c.isVarArgs();
-		}
-		
-		@Override
-		public String getName() {
-			return c.getName();
-		}
-		
-		public java.lang.reflect.Constructor<T> getConstructor() {
-			return c;
+			return member.isVarArgs();
 		}
 	}
 	
-	public Class<?>[] getParameterTypes();
+	public abstract Class<?>[] getParameterTypes();
 	
-	public boolean isVarArgs();
+	public abstract boolean isVarArgs();
 	
-	public String getName();
+	public String getName() {
+		return member.getName();
+	}
+	
+	public M getMember() {
+		return member;
+	}
 }
