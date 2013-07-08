@@ -90,7 +90,7 @@ class JLSMethodLocator extends MethodLocator {
 			}
 		}
 		
-		throw new NoSuchMethodException(createMessage(clazz, name, args));
+		throw new NoSuchMethodException(createNoSuchMethodMessage(clazz, name, args));
 	}
 	
 	private <M extends AccessibleObject & GenericDeclaration & Member> Set<M> getMostSpecific(
@@ -108,7 +108,7 @@ class JLSMethodLocator extends MethodLocator {
 		return found;
 	}
 	
-	private String createMessage(Class<?> clazz, String name, Class<?>... args) {
+	private String createNoSuchMethodMessage(Class<?> clazz, String name, Class<?>... args) {
 		StringBuilder b = new StringBuilder();
 		b.append(clazz.getName()).append(".").append(name).append("(");
 		for (int x = 0; x < args.length; x++) {
