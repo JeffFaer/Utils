@@ -53,6 +53,8 @@ public class BasicTypeConversionTest {
 		assertFalse(t.convert(double.class, byte.class));
 		assertFalse(t.convert(boolean.class, int.class));
 		assertFalse(t.convert(char.class, short.class));
+		assertFalse(t.convert(void.class, long.class));
+		assertFalse(t.convert(byte.class, void.class));
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
@@ -115,6 +117,8 @@ public class BasicTypeConversionTest {
 		
 		assertTrue(t.convert(byte.class, Number.class));
 		assertTrue(t.convert(double.class, Object.class));
+		
+		assertFalse(t.convert(void.class, Object.class));
 	}
 	
 	@Test(expected = IllegalArgumentException.class)

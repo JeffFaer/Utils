@@ -25,7 +25,8 @@ public enum BasicTypeConversion implements TypeConversion {
 	WIDENING_PRIMITIVE {
 		@Override
 		protected boolean doConvert(Class<?> from, Class<?> to) {
-			if (from == null || !from.isPrimitive() || !to.isPrimitive() || from == boolean.class || to == char.class) {
+			if (from == null || !from.isPrimitive() || !to.isPrimitive() || !PRIMITIVES.contains(from)
+					|| !PRIMITIVES.contains(to) || to == char.class) {
 				return from == to;
 			} else if (from == char.class) {
 				if (to == short.class) {
@@ -78,7 +79,7 @@ public enum BasicTypeConversion implements TypeConversion {
 				return false;
 			}
 			Class<?> boxed = BOX.get(from);
-			return WIDENING_REFERENCE.convert(boxed, to);
+			return boxed == null ? false : WIDENING_REFERENCE.convert(boxed, to);
 		}
 	},
 	/**
