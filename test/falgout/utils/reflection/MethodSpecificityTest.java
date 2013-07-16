@@ -59,7 +59,6 @@ public class MethodSpecificityTest {
 	private static final Parameterized.Method method5B;
 	private static final Parameterized.Method method5C;
 	private static final Parameterized.Method method6;
-	
 	static {
 		try {
 			method4 = new Parameterized.Method(MethodSpecificityTest.class.getMethod("bar", Object.class, Object.class,

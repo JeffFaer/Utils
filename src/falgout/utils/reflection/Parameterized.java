@@ -5,11 +5,14 @@ import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Member;
 
 /**
+ * When JDK 1.8 comes out, this entire abstraction can be removed because of
+ * {@code Executable}.
  * 
  * @author jeffrey
  * 
- * @param <M> As of JDK 1.7, only {@link java.lang.reflect.Constructor Constructor} and
- *        {@link java.lang.reflect.Method Method} fulfill the boundary
+ * @param <M> As of JDK 1.7, only {@link java.lang.reflect.Constructor
+ *        Constructor} and {@link java.lang.reflect.Method Method} fulfill the
+ *        boundary
  *        requirements.
  */
 abstract class Parameterized<M extends AccessibleObject & GenericDeclaration & Member> {
