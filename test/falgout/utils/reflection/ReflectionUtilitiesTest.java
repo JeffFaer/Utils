@@ -8,11 +8,11 @@ import java.util.Set;
 
 import org.junit.Test;
 
-public class ReflectionUtilsTest {
+public class ReflectionUtilitiesTest {
 	@Test
 	public void GetClassesTest() {
 		Object[] args = { "hi", 5, null };
-		Class<?>[] c = ReflectionUtils.getClasses(args);
+		Class<?>[] c = ReflectionUtilities.getClasses(args);
 		
 		assertSame(String.class, c[0]);
 		assertSame(Integer.class, c[1]);
@@ -21,19 +21,19 @@ public class ReflectionUtilsTest {
 	
 	@Test
 	public void getConstructorsTest() {
-		Set<Constructor<String>> constructors = ReflectionUtils.getConstructors(String.class);
+		Set<Constructor<String>> constructors = ReflectionUtilities.getConstructors(String.class);
 		assertEquals(15, constructors.size());
 		
-		Set<Constructor<Integer>> ctors2 = ReflectionUtils.getConstructors(Integer.class);
+		Set<Constructor<Integer>> ctors2 = ReflectionUtilities.getConstructors(Integer.class);
 		assertEquals(2, ctors2.size());
 	}
 	
 	@Test
 	public void getDeclaredConstructorsTest() {
-		Set<Constructor<String>> constructors = ReflectionUtils.getDeclaredConstructors(String.class);
+		Set<Constructor<String>> constructors = ReflectionUtilities.getDeclaredConstructors(String.class);
 		assertEquals(17, constructors.size());
 		
-		Set<Constructor<Integer>> ctors2 = ReflectionUtils.getDeclaredConstructors(Integer.class);
+		Set<Constructor<Integer>> ctors2 = ReflectionUtilities.getDeclaredConstructors(Integer.class);
 		assertEquals(2, ctors2.size());
 	}
 }

@@ -4,8 +4,8 @@ import java.lang.reflect.Constructor;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public final class ReflectionUtils {
-	private ReflectionUtils() {
+public final class ReflectionUtilities {
+	private ReflectionUtilities() {
 	}
 	
 	public static Class<?>[] getClasses(Object... args) {
@@ -17,8 +17,11 @@ public final class ReflectionUtils {
 	}
 	
 	public static <T> Set<Constructor<T>> getConstructors(Class<T> clazz) {
-		Constructor<?>[] constructors = clazz.getConstructors();
-		return createConstructorList(constructors);
+		return createConstructorList(clazz.getConstructors());
+	}
+	
+	public static <T> Set<Constructor<T>> getDeclaredConstructors(Class<T> clazz) {
+		return createConstructorList(clazz.getDeclaredConstructors());
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -30,10 +33,5 @@ public final class ReflectionUtils {
 		}
 		
 		return ctors;
-	}
-	
-	public static <T> Set<Constructor<T>> getDeclaredConstructors(Class<T> clazz) {
-		Constructor<?>[] constructors = clazz.getDeclaredConstructors();
-		return createConstructorList(constructors);
 	}
 }
