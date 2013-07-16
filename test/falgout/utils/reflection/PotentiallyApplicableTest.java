@@ -2,6 +2,7 @@ package falgout.utils.reflection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -47,5 +48,11 @@ public class PotentiallyApplicableTest {
 			PotentiallyApplicable a = new PotentiallyApplicable("foo", x);
 			assertEquals(x >= (arity - 1), a.test(varargMethod));
 		}
+	}
+	
+	@Test
+	public void NamesWorkForConstructors() throws NoSuchMethodException {
+		PotentiallyApplicable a = new PotentiallyApplicable("<init>", 0);
+		assertTrue(a.test(new Parameterized.Constructor<>(PotentiallyApplicableTest.class.getConstructor())));
 	}
 }
