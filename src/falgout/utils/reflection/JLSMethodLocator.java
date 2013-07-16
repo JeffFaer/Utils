@@ -110,7 +110,7 @@ class JLSMethodLocator extends MethodLocator {
 	
 	private String createNoSuchMethodMessage(Class<?> clazz, String name, Class<?>... args) {
 		StringBuilder b = new StringBuilder();
-		b.append(clazz.getName()).append(".").append(name).append("(");
+		b.append(toHumanReadableName(clazz)).append(".").append(name).append("(");
 		for (int x = 0; x < args.length; x++) {
 			if (x != 0) {
 				b.append(", ");
