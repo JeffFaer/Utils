@@ -121,6 +121,10 @@ public enum BasicTypeConversion implements TypeConversion {
 	public final boolean convert(Class<?> from, Class<?> to) {
 		if (to == null) {
 			throw new IllegalArgumentException("to == null");
+		} else if (to == void.class) {
+			throw new IllegalArgumentException("to == void");
+		} else if (from == void.class) {
+			throw new IllegalArgumentException("from == void");
 		}
 		
 		return doConvert(from, to);

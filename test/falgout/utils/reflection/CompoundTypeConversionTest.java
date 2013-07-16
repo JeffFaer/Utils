@@ -4,6 +4,9 @@ import static falgout.utils.reflection.BasicTypeConversionTest.BoxingTest;
 import static falgout.utils.reflection.BasicTypeConversionTest.UnboxingTest;
 import static falgout.utils.reflection.BasicTypeConversionTest.WideningPrimitiveTest;
 import static falgout.utils.reflection.BasicTypeConversionTest.WideningReferenceTest;
+import static falgout.utils.reflection.BasicTypeConversionTest.nullCheckTo;
+import static falgout.utils.reflection.BasicTypeConversionTest.voidCheckFrom;
+import static falgout.utils.reflection.BasicTypeConversionTest.voidCheckTo;
 import static falgout.utils.reflection.CompoundTypeConversion.METHOD_INVOCATION;
 import static falgout.utils.reflection.CompoundTypeConversion.SUBTYPING;
 
@@ -20,7 +23,17 @@ public class CompoundTypeConversionTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void MethodInvocationFailsWhenToIsNull() {
-		METHOD_INVOCATION.convert(int.class, null);
+		nullCheckTo(METHOD_INVOCATION);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void MethodInvocationFailsWhenToIsVoid() {
+		voidCheckTo(METHOD_INVOCATION);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void MethodInvocationFailsWhenFromIsVoid() {
+		voidCheckFrom(METHOD_INVOCATION);
 	}
 	
 	@Test
@@ -31,6 +44,16 @@ public class CompoundTypeConversionTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void SubtypingFailsWhenToIsNull() {
-		SUBTYPING.convert(int.class, null);
+		nullCheckTo(SUBTYPING);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void SubtypingFailsWhenToIsVoid() {
+		voidCheckTo(SUBTYPING);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void SubtypingFailsWhenFromIsVoid() {
+		voidCheckFrom(SUBTYPING);
 	}
 }

@@ -26,7 +26,29 @@ public class BasicTypeConversionTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void IdentityFailsWhenToIsNull() {
-		IDENTITY.convert(String.class, null);
+		nullCheckTo(IDENTITY);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void IdentityFailsWhenToIsVoid() {
+		voidCheckTo(IDENTITY);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void IdentityFailsWhenFromIsVoid() {
+		voidCheckFrom(IDENTITY);
+	}
+	
+	public static void nullCheckTo(TypeConversion t) {
+		t.convert(String.class, null);
+	}
+	
+	public static void voidCheckTo(TypeConversion t) {
+		t.convert(String.class, void.class);
+	}
+	
+	public static void voidCheckFrom(TypeConversion t) {
+		t.convert(void.class, String.class);
 	}
 	
 	@Test
@@ -53,13 +75,21 @@ public class BasicTypeConversionTest {
 		assertFalse(t.convert(double.class, byte.class));
 		assertFalse(t.convert(boolean.class, int.class));
 		assertFalse(t.convert(char.class, short.class));
-		assertFalse(t.convert(void.class, long.class));
-		assertFalse(t.convert(byte.class, void.class));
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void WideningPrimitiveFailsWhenToIsNull() {
-		WIDENING_PRIMITIVE.convert(int.class, null);
+		nullCheckTo(WIDENING_PRIMITIVE);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void WideningPrimitiveFailsWhenToIsVoid() {
+		voidCheckTo(WIDENING_PRIMITIVE);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void WideningPrimitiveFailsWhenFromIsVoid() {
+		voidCheckFrom(WIDENING_PRIMITIVE);
 	}
 	
 	@Test
@@ -71,7 +101,17 @@ public class BasicTypeConversionTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void WideningAndNarrowingPrimitiveFailsWhenToIsNull() {
-		WIDENING_AND_NARROWING_PRIMITIVE.convert(byte.class, null);
+		nullCheckTo(WIDENING_AND_NARROWING_PRIMITIVE);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void WideningAndNarrowingPrimitiveFailsWhenToIsVoid() {
+		voidCheckTo(WIDENING_AND_NARROWING_PRIMITIVE);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void WideningAndNarrowingPrimitiveFailsWhenFromIsVoid() {
+		voidCheckFrom(WIDENING_AND_NARROWING_PRIMITIVE);
 	}
 	
 	@Test
@@ -97,7 +137,17 @@ public class BasicTypeConversionTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void WideningReferenceFailsWhenToIsNull() {
-		WIDENING_REFERENCE.convert(String.class, null);
+		nullCheckTo(WIDENING_REFERENCE);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void WideningReferenceFailsWhenToIsVoid() {
+		voidCheckTo(WIDENING_REFERENCE);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void WideningReferenceFailsWhenFromIsVoid() {
+		voidCheckFrom(WIDENING_REFERENCE);
 	}
 	
 	@Test
@@ -117,13 +167,21 @@ public class BasicTypeConversionTest {
 		
 		assertTrue(t.convert(byte.class, Number.class));
 		assertTrue(t.convert(double.class, Object.class));
-		
-		assertFalse(t.convert(void.class, Object.class));
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void BoxingFailsWhenToIsNull() {
-		BOXING.convert(int.class, null);
+		nullCheckTo(BOXING);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void BoxingFailsWhenToIsVoid() {
+		voidCheckTo(BOXING);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void BoxingFailsWhenFromIsVoid() {
+		voidCheckFrom(BOXING);
 	}
 	
 	@Test
@@ -147,6 +205,16 @@ public class BasicTypeConversionTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void UnboxingFailsWhenToIsNull() {
-		UNBOXING.convert(Integer.class, null);
+		nullCheckTo(UNBOXING);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void UnboxingFailsWhenToIsVoid() {
+		voidCheckTo(UNBOXING);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void UnboxingFailsWhenFromIsVoid() {
+		voidCheckFrom(UNBOXING);
 	}
 }
