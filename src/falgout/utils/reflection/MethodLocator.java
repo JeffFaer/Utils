@@ -48,20 +48,16 @@ public abstract class MethodLocator {
 		return getMethod(methods, clazz, name, ReflectionUtilities.getClasses(args));
 	}
 	
-	public Method getMethod(Collection<? extends Method> methods, Class<?> clazz, String name, Class<?>... args)
-			throws AmbiguousDeclarationException, NoSuchMethodException {
-		return findMethod(methods, clazz, name, args);
-	}
+	protected abstract Method getMethod(Collection<? extends Method> methods, Class<?> clazz, String name,
+			Class<?>... args) throws AmbiguousDeclarationException, NoSuchMethodException;
 	
 	public Set<Method> getMethods(Collection<? extends Method> methods, Class<?> clazz, String name, Object... args)
 			throws NoSuchMethodException {
 		return getMethods(methods, clazz, name, ReflectionUtilities.getClasses(args));
 	}
 	
-	public Set<Method> getMethods(Collection<? extends Method> methods, Class<?> clazz, String name, Class<?>... args)
-			throws NoSuchMethodException {
-		return findMethods(methods, clazz, name, args);
-	}
+	protected abstract Set<Method> getMethods(Collection<? extends Method> methods, Class<?> clazz, String name,
+			Class<?>... args) throws NoSuchMethodException;
 	
 	public <T> Constructor<T> getConstructor(Class<T> clazz, Object... args) throws AmbiguousDeclarationException,
 			NoSuchMethodException {
@@ -105,30 +101,14 @@ public abstract class MethodLocator {
 		return getConstructor(constructors, clazz, ReflectionUtilities.getClasses(args));
 	}
 	
-	public <T> Constructor<T> getConstructor(Collection<? extends Constructor<T>> constructors, Class<T> clazz,
-			Class<?>... args) throws AmbiguousDeclarationException, NoSuchMethodException {
-		return findConstructor(constructors, clazz, args);
-	}
+	protected abstract <T> Constructor<T> getConstructor(Collection<? extends Constructor<T>> constructors,
+			Class<T> clazz, Class<?>... args) throws AmbiguousDeclarationException, NoSuchMethodException;
 	
 	public <T> Set<Constructor<T>> getConstructors(Collection<? extends Constructor<T>> constructors, Class<T> clazz,
 			Object... args) throws NoSuchMethodException {
 		return getConstructors(constructors, clazz, ReflectionUtilities.getClasses(args));
 	}
 	
-	public <T> Set<Constructor<T>> getConstructors(Collection<? extends Constructor<T>> constructors, Class<T> clazz,
-			Class<?>... args) throws NoSuchMethodException {
-		return findConstructors(constructors, clazz, args);
-	}
-	
-	protected abstract Method findMethod(Collection<? extends Method> methods, Class<?> clazz, String name,
-			Class<?>... args) throws AmbiguousDeclarationException, NoSuchMethodException;
-	
-	protected abstract Set<Method> findMethods(Collection<? extends Method> methods, Class<?> clazz, String name,
-			Class<?>... args) throws NoSuchMethodException;
-	
-	protected abstract <T> Constructor<T> findConstructor(Collection<? extends Constructor<T>> constructors,
-			Class<T> clazz, Class<?>... args) throws AmbiguousDeclarationException, NoSuchMethodException;
-	
-	protected abstract <T> Set<Constructor<T>> findConstructors(Collection<? extends Constructor<T>> constructors,
+	protected abstract <T> Set<Constructor<T>> getConstructors(Collection<? extends Constructor<T>> constructors,
 			Class<T> clazz, Class<?>... args) throws NoSuchMethodException;
 }

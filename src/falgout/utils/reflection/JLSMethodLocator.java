@@ -16,26 +16,26 @@ import falgout.utils.temp.Predicate;
 
 class JLSMethodLocator extends MethodLocator {
 	@Override
-	protected Method findMethod(Collection<? extends Method> methods, Class<?> clazz, String name, Class<?>... args)
+	protected Method getMethod(Collection<? extends Method> methods, Class<?> clazz, String name, Class<?>... args)
 			throws AmbiguousDeclarationException, NoSuchMethodException {
 		return findParameterized(convertMethods(methods), clazz, name, args);
 	}
 	
 	@Override
-	protected Set<Method> findMethods(Collection<? extends Method> methods, Class<?> clazz, String name,
-			Class<?>... args) throws NoSuchMethodException {
+	protected Set<Method> getMethods(Collection<? extends Method> methods, Class<?> clazz, String name, Class<?>... args)
+			throws NoSuchMethodException {
 		return findParameterizeds(convertMethods(methods), clazz, name, args);
 	}
 	
 	@Override
-	protected <T> Constructor<T> findConstructor(Collection<? extends Constructor<T>> constructors, Class<T> clazz,
+	protected <T> Constructor<T> getConstructor(Collection<? extends Constructor<T>> constructors, Class<T> clazz,
 			Class<?>... args) throws AmbiguousDeclarationException, NoSuchMethodException {
 		return findParameterized(convertConstructors(constructors), clazz, "<init>", args);
 	}
 	
 	@Override
-	protected <T> Set<Constructor<T>> findConstructors(Collection<? extends Constructor<T>> constructors,
-			Class<T> clazz, Class<?>... args) throws NoSuchMethodException {
+	protected <T> Set<Constructor<T>> getConstructors(Collection<? extends Constructor<T>> constructors, Class<T> clazz,
+			Class<?>... args) throws NoSuchMethodException {
 		return findParameterizeds(convertConstructors(constructors), clazz, "<init>", args);
 	}
 	
