@@ -82,5 +82,19 @@ public class PhaseTest {
 				Integer.class, Long.class, String[].class }, varargsMethod));
 		assertFalse(THREE.isApplicable(new Class<?>[] { String.class, Object.class, int.class, long.class,
 				Integer.class, Long.class, String.class, Object.class }, varargsMethod));
+		
+		assertTrue(THREE.isApplicable(new Class<?>[] { int.class, int[].class }, MIXED));
+	}
+	
+	private static final Parameterized.Method MIXED;
+	static {
+		try {
+			MIXED = new Parameterized.Method(PhaseTest.class.getMethod("mixedBoxing", int.class, int[].class));
+		} catch (NoSuchMethodException e) {
+			throw new Error(e);
+		}
+	}
+	
+	public static void mixedBoxing(int i, int... is) {
 	}
 }
