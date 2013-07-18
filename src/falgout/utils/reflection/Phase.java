@@ -17,7 +17,7 @@ enum Phase {
 	 */
 	THREE {
 		@Override
-		public boolean isApplicable(Class<?>[] args, Parameterized p) {
+		public boolean isApplicable(Class<?>[] args, Parameterized<?> p) {
 			if (!p.isVarArgs()) {
 				return false;
 			}
@@ -57,7 +57,7 @@ enum Phase {
 		this.c = c;
 	}
 	
-	public boolean isApplicable(Class<?>[] args, Parameterized p) {
+	public boolean isApplicable(Class<?>[] args, Parameterized<?> p) {
 		if (p.isVarArgs()) {
 			return false;
 		}
