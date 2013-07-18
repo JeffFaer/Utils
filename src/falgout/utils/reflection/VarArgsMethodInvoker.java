@@ -48,8 +48,9 @@ class VarArgsMethodInvoker extends MethodInvoker {
 		
 		Class<?> arr;
 		Object varArgsArray;
-		if (varArgsLength == 1 && (arr = args[n].getClass()).isArray()
-				&& componentType.isAssignableFrom(arr.getComponentType())) {
+		if (varArgsLength == 1
+				&& (args[n] == null || (arr = args[n].getClass()).isArray()
+						&& componentType.isAssignableFrom(arr.getComponentType()))) {
 			// reuse array if it's of an appropriate type
 			varArgsArray = args[n];
 		} else if (componentType.isPrimitive()) {

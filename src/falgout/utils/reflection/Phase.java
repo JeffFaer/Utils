@@ -33,10 +33,10 @@ enum Phase {
 			
 			// check to see if the remaining arg is an array which is compatible
 			// with the var-arg array
-			if (k == n && args[n - 1].isArray()) {
-				if (p.getParameterTypes()[n - 1].isAssignableFrom(args[n - 1])) {
-					return true;
-				}
+			if (k == n
+					&& (args[n - 1] == null || args[n - 1].isArray()
+							&& p.getParameterTypes()[n - 1].isAssignableFrom(args[n - 1]))) {
+				return true;
 			} else if (k >= n) {
 				for (int i = n - 1; i < args.length; i++) {
 					if (!c.convert(args[i], p.getParameterTypes()[n - 1].getComponentType())) {

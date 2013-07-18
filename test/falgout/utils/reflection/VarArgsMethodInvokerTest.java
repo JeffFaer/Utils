@@ -2,6 +2,7 @@ package falgout.utils.reflection;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 import java.lang.reflect.InvocationTargetException;
@@ -44,6 +45,12 @@ public class VarArgsMethodInvokerTest {
 	}
 	
 	@Test
+	public void NullArrayAllowed() throws InvocationTargetException, IllegalAccessException, IllegalArgumentException,
+			AmbiguousDeclarationException, NoSuchMethodException {
+		assertNull(INVOKER.invokeStatic(CLAZZ, NAME, new Object(), null));
+	}
+	
+	@Test
 	public void PrimitiveZeroVarArgsAllowed() throws InvocationTargetException, IllegalAccessException,
 			IllegalArgumentException, AmbiguousDeclarationException, NoSuchMethodException {
 		assertEquals(0, ((int[]) INVOKER.invokeStatic(CLAZZ, NAME2, 5)).length);
@@ -60,5 +67,11 @@ public class VarArgsMethodInvokerTest {
 	public void PrimitiveCreatesArray() throws InvocationTargetException, IllegalAccessException,
 			IllegalArgumentException, AmbiguousDeclarationException, NoSuchMethodException {
 		assertArrayEquals(new int[] { 6, 7 }, (int[]) INVOKER.invokeStatic(CLAZZ, NAME2, 5, 6, 7));
+	}
+	
+	@Test
+	public void PrimitiveNullArrayAllowed() throws InvocationTargetException, IllegalAccessException,
+			IllegalArgumentException, AmbiguousDeclarationException, NoSuchMethodException {
+		assertNull(INVOKER.invokeStatic(CLAZZ, NAME2, 5, null));
 	}
 }
