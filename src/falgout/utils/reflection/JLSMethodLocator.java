@@ -22,8 +22,8 @@ class JLSMethodLocator extends MethodLocator {
 	}
 	
 	@Override
-	protected Set<Method> getMethods(Collection<? extends Method> methods, Class<?> clazz, String name, Class<?>... args)
-			throws NoSuchMethodException {
+	protected Set<Method> getMethods(Collection<? extends Method> methods, Class<?> clazz, String name,
+			Class<?>... args) throws NoSuchMethodException {
 		return findParameterizeds(convertMethods(methods), clazz, name, args);
 	}
 	
@@ -34,8 +34,8 @@ class JLSMethodLocator extends MethodLocator {
 	}
 	
 	@Override
-	protected <T> Set<Constructor<T>> getConstructors(Collection<? extends Constructor<T>> constructors, Class<T> clazz,
-			Class<?>... args) throws NoSuchMethodException {
+	protected <T> Set<Constructor<T>> getConstructors(Collection<? extends Constructor<T>> constructors,
+			Class<T> clazz, Class<?>... args) throws NoSuchMethodException {
 		return findParameterizeds(convertConstructors(constructors), clazz, "<init>", args);
 	}
 	
@@ -122,6 +122,10 @@ class JLSMethodLocator extends MethodLocator {
 	}
 	
 	private String toHumanReadableName(Class<?> clazz) {
+		if (clazz == null) {
+			return "null";
+		}
+		
 		return clazz.isArray() ? toHumanReadableName(clazz.getComponentType()) + "[]" : clazz.getName();
 	}
 }

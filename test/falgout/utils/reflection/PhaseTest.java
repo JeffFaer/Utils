@@ -84,6 +84,7 @@ public class PhaseTest {
 				Integer.class, Long.class, String.class, Object.class }, varargsMethod));
 		
 		assertTrue(THREE.isApplicable(new Class<?>[] { int.class, int[].class }, MIXED));
+		assertTrue(THREE.isApplicable(new Class<?>[] { int.class, null }, MIXED));
 	}
 	
 	private static final Parameterized.Method MIXED;
