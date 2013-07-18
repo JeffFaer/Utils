@@ -47,19 +47,19 @@ class VarArgsMethodInvoker extends MethodInvoker {
 		Class<?> componentType = parameterTypes[n].getComponentType();
 		
 		Class<?> arr;
+		Object varArgsArray;
 		if (varArgsLength == 1 && (arr = args[n].getClass()).isArray()
 				&& componentType.isAssignableFrom(arr.getComponentType())) {
-			newArgs[n] = args[n];
+			// reuse array if it's of an appropriate type
+			varArgsArray = args[n];
+		} else if (componentType.isPrimitive()) {
+			varArgsArray = unbox(componentType, args, n, varArgsLength);
 		} else {
-			Object varArgsArray;
-			if (componentType.isPrimitive()) {
-				varArgsArray = unbox(componentType, args, n, varArgsLength);
-			} else {
-				varArgsArray = Array.newInstance(componentType, varArgsLength);
-				System.arraycopy(args, n, varArgsArray, 0, varArgsLength);
-			}
-			newArgs[n] = varArgsArray;
+			varArgsArray = Array.newInstance(componentType, varArgsLength);
+			System.arraycopy(args, n, varArgsArray, 0, varArgsLength);
 		}
+		
+		newArgs[n] = varArgsArray;
 		
 		return newArgs;
 	}
@@ -86,7 +86,7 @@ class VarArgsMethodInvoker extends MethodInvoker {
 		}
 	}
 	
-	private Object unboxBoolean(Object[] args, int n, int varArgsLength) {
+	private boolean[] unboxBoolean(Object[] args, int n, int varArgsLength) {
 		boolean[] varArgs = new boolean[varArgsLength];
 		int c = 0;
 		for (int i = n; i < args.length; i++) {
@@ -95,7 +95,7 @@ class VarArgsMethodInvoker extends MethodInvoker {
 		return varArgs;
 	}
 	
-	private Object unboxByte(Object[] args, int n, int varArgsLength) {
+	private byte[] unboxByte(Object[] args, int n, int varArgsLength) {
 		byte[] varArgs = new byte[varArgsLength];
 		int c = 0;
 		for (int i = n; i < args.length; i++) {
@@ -104,7 +104,7 @@ class VarArgsMethodInvoker extends MethodInvoker {
 		return varArgs;
 	}
 	
-	private Object unboxShort(Object[] args, int n, int varArgsLength) {
+	private short[] unboxShort(Object[] args, int n, int varArgsLength) {
 		short[] varArgs = new short[varArgsLength];
 		int c = 0;
 		for (int i = n; i < args.length; i++) {
@@ -113,7 +113,7 @@ class VarArgsMethodInvoker extends MethodInvoker {
 		return varArgs;
 	}
 	
-	private Object unboxChar(Object[] args, int n, int varArgsLength) {
+	private char[] unboxChar(Object[] args, int n, int varArgsLength) {
 		char[] varArgs = new char[varArgsLength];
 		int c = 0;
 		for (int i = n; i < args.length; i++) {
@@ -122,7 +122,7 @@ class VarArgsMethodInvoker extends MethodInvoker {
 		return varArgs;
 	}
 	
-	private Object unboxInt(Object[] args, int n, int varArgsLength) {
+	private int[] unboxInt(Object[] args, int n, int varArgsLength) {
 		int[] varArgs = new int[varArgsLength];
 		int c = 0;
 		for (int i = n; i < args.length; i++) {
@@ -131,7 +131,7 @@ class VarArgsMethodInvoker extends MethodInvoker {
 		return varArgs;
 	}
 	
-	private Object unboxLong(Object[] args, int n, int varArgsLength) {
+	private long[] unboxLong(Object[] args, int n, int varArgsLength) {
 		long[] varArgs = new long[varArgsLength];
 		int c = 0;
 		for (int i = n; i < args.length; i++) {
@@ -140,7 +140,7 @@ class VarArgsMethodInvoker extends MethodInvoker {
 		return varArgs;
 	}
 	
-	private Object unboxFloat(Object[] args, int n, int varArgsLength) {
+	private float[] unboxFloat(Object[] args, int n, int varArgsLength) {
 		float[] varArgs = new float[varArgsLength];
 		int c = 0;
 		for (int i = n; i < args.length; i++) {
@@ -149,7 +149,7 @@ class VarArgsMethodInvoker extends MethodInvoker {
 		return varArgs;
 	}
 	
-	private Object unboxDouble(Object[] args, int n, int varArgsLength) {
+	private double[] unboxDouble(Object[] args, int n, int varArgsLength) {
 		double[] varArgs = new double[varArgsLength];
 		int c = 0;
 		for (int i = n; i < args.length; i++) {

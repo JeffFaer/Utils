@@ -31,6 +31,8 @@ enum Phase {
 				}
 			}
 			
+			// check to see if the remaining arg is an array which is compatible
+			// with the var-arg array
 			if (k == n && args[n - 1].isArray()) {
 				if (p.getParameterTypes()[n - 1].isAssignableFrom(args[n - 1])) {
 					return true;

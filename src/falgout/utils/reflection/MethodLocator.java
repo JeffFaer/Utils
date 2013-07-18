@@ -6,6 +6,33 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
+/**
+ * This class provides methods for finding a method or constructor in a given
+ * class. You can either provide the actual arguments or the classes of the
+ * actual arguments when using the methods in this class, but make sure to
+ * provide the classes of the actual arguments in a {@code Class<?>[]} instead
+ * of a {@code Object[]} or else the wrong overloaded method will be called. <br/>
+ * <br/>
+ * The methods in this class may throw one of two exceptions:
+ * <ul>
+ * <li>{@link AmbiguousDeclarationException}</li>
+ * <ul>
+ * <li>If more than one method is equally specific for the given name and
+ * arguments.</li>
+ * </ul>
+ * <li>{@link NoSuchMethodException}</li>
+ * <ul>
+ * <li>If there is no method for the given name and arguments</li>
+ * </ul>
+ * </ul>
+ * 
+ * You can avoid the first by using a pluralized version of the method. I.E.
+ * {@link #getMethods(Class, String, Object...) getMethods} instead of
+ * {@link #getMethod(Class, String, Object...) getMethod}.
+ * 
+ * @author jeffrey
+ * 
+ */
 public abstract class MethodLocator {
 	public Method getMethod(Class<?> clazz, String name, Object... args) throws AmbiguousDeclarationException,
 			NoSuchMethodException {
@@ -43,18 +70,8 @@ public abstract class MethodLocator {
 		return getMethods(Arrays.asList(clazz.getDeclaredMethods()), clazz, name, args);
 	}
 	
-	public Method getMethod(Collection<? extends Method> methods, Class<?> clazz, String name, Object... args)
-			throws AmbiguousDeclarationException, NoSuchMethodException {
-		return getMethod(methods, clazz, name, ReflectionUtilities.getClasses(args));
-	}
-	
 	protected abstract Method getMethod(Collection<? extends Method> methods, Class<?> clazz, String name,
 			Class<?>... args) throws AmbiguousDeclarationException, NoSuchMethodException;
-	
-	public Set<Method> getMethods(Collection<? extends Method> methods, Class<?> clazz, String name, Object... args)
-			throws NoSuchMethodException {
-		return getMethods(methods, clazz, name, ReflectionUtilities.getClasses(args));
-	}
 	
 	protected abstract Set<Method> getMethods(Collection<? extends Method> methods, Class<?> clazz, String name,
 			Class<?>... args) throws NoSuchMethodException;
@@ -96,18 +113,8 @@ public abstract class MethodLocator {
 		return getConstructors(ReflectionUtilities.getDeclaredConstructors(clazz), clazz, args);
 	}
 	
-	public <T> Constructor<T> getConstructor(Collection<? extends Constructor<T>> constructors, Class<T> clazz,
-			Object... args) throws AmbiguousDeclarationException, NoSuchMethodException {
-		return getConstructor(constructors, clazz, ReflectionUtilities.getClasses(args));
-	}
-	
 	protected abstract <T> Constructor<T> getConstructor(Collection<? extends Constructor<T>> constructors,
 			Class<T> clazz, Class<?>... args) throws AmbiguousDeclarationException, NoSuchMethodException;
-	
-	public <T> Set<Constructor<T>> getConstructors(Collection<? extends Constructor<T>> constructors, Class<T> clazz,
-			Object... args) throws NoSuchMethodException {
-		return getConstructors(constructors, clazz, ReflectionUtilities.getClasses(args));
-	}
 	
 	protected abstract <T> Set<Constructor<T>> getConstructors(Collection<? extends Constructor<T>> constructors,
 			Class<T> clazz, Class<?>... args) throws NoSuchMethodException;
