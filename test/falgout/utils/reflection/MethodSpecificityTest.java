@@ -8,17 +8,13 @@ import java.io.Serializable;
 import org.junit.Test;
 
 public class MethodSpecificityTest {
-	public static void foo(Object o1, Object o2, Object o3) {
-	}
+	public static void foo(Object o1, Object o2, Object o3) {}
 	
-	public static void foo(Serializable o1, Object o2, Object o3) {
-	}
+	public static void foo(Serializable o1, Object o2, Object o3) {}
 	
-	public static void foo(Object o1, Object o2, Serializable o3) {
-	}
+	public static void foo(Object o1, Object o2, Serializable o3) {}
 	
-	public static void foo(String o1, String o2, String o3) {
-	}
+	public static void foo(String o1, String o2, String o3) {}
 	
 	private static final Parameterized.Method method1;
 	private static final Parameterized.Method method2A;
@@ -39,20 +35,15 @@ public class MethodSpecificityTest {
 		}
 	}
 	
-	public static void bar(Object o1, Object o2, Object... o3) {
-	}
+	public static void bar(Object o1, Object o2, Object... o3) {}
 	
-	public static void bar(Serializable o1, Object o2, Object... o3) {
-	}
+	public static void bar(Serializable o1, Object o2, Object... o3) {}
 	
-	public static void bar(Object o1, Object o2, Serializable o3, Object... o4) {
-	}
+	public static void bar(Object o1, Object o2, Serializable o3, Object... o4) {}
 	
-	public static void bar(Object o1, Object o2, Serializable... o3) {
-	}
+	public static void bar(Object o1, Object o2, Serializable... o3) {}
 	
-	public static void bar(String o1, String o2, String o3, String o4, String... o5) {
-	}
+	public static void bar(String o1, String o2, String o3, String o4, String... o5) {}
 	
 	private static final Parameterized.Method method4;
 	private static final Parameterized.Method method5A;

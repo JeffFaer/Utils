@@ -29,9 +29,7 @@ public enum BasicTypeConversion implements TypeConversion {
 					|| !PRIMITIVES.contains(to) || to == char.class) {
 				return from == to;
 			} else if (from == char.class) {
-				if (to == short.class) {
-					return false;
-				}
+				if (to == short.class) { return false; }
 				from = short.class;
 			}
 			
@@ -44,9 +42,7 @@ public enum BasicTypeConversion implements TypeConversion {
 	WIDENING_AND_NARROWING_PRIMITIVE {
 		@Override
 		protected boolean doConvert(Class<?> from, Class<?> to) {
-			if (from == null) {
-				return false;
-			}
+			if (from == null) { return false; }
 			
 			return from == byte.class && to == char.class;
 		}
@@ -60,9 +56,7 @@ public enum BasicTypeConversion implements TypeConversion {
 	WIDENING_REFERENCE {
 		@Override
 		protected boolean doConvert(Class<?> from, Class<?> to) {
-			if (to.isPrimitive()) {
-				return false;
-			}
+			if (to.isPrimitive()) { return false; }
 			return from == null || to.isAssignableFrom(from);
 		}
 	},
@@ -75,9 +69,7 @@ public enum BasicTypeConversion implements TypeConversion {
 	BOXING {
 		@Override
 		protected boolean doConvert(Class<?> from, Class<?> to) {
-			if (from == null || !from.isPrimitive() || to.isPrimitive()) {
-				return false;
-			}
+			if (from == null || !from.isPrimitive() || to.isPrimitive()) { return false; }
 			Class<?> boxed = BOX.get(from);
 			return boxed == null ? false : WIDENING_REFERENCE.convert(boxed, to);
 		}
@@ -91,9 +83,7 @@ public enum BasicTypeConversion implements TypeConversion {
 	UNBOXING {
 		@Override
 		protected boolean doConvert(Class<?> from, Class<?> to) {
-			if (from == null || from.isPrimitive() || !to.isPrimitive()) {
-				return false;
-			}
+			if (from == null || from.isPrimitive() || !to.isPrimitive()) { return false; }
 			Class<?> unboxed = UNBOX.get(from);
 			return unboxed == null ? false : WIDENING_PRIMITIVE.convert(unboxed, to);
 		}
@@ -123,9 +113,7 @@ public enum BasicTypeConversion implements TypeConversion {
 			throw new IllegalArgumentException("to == null");
 		} else if (to == void.class) {
 			throw new IllegalArgumentException("to == void");
-		} else if (from == void.class) {
-			throw new IllegalArgumentException("from == void");
-		}
+		} else if (from == void.class) { throw new IllegalArgumentException("from == void"); }
 		
 		return doConvert(from, to);
 	}

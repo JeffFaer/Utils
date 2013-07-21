@@ -59,9 +59,7 @@ class JLSMethodLocator extends MethodLocator {
 			Collection<? extends Parameterized<M>> parameterizeds, Class<?> clazz, String name, Class<?>... args)
 			throws AmbiguousDeclarationException, NoSuchMethodException {
 		Set<M> found = findParameterizeds(parameterizeds, clazz, name, args);
-		if (found.size() > 1) {
-			throw new AmbiguousDeclarationException(found.toString());
-		}
+		if (found.size() > 1) { throw new AmbiguousDeclarationException(found.toString()); }
 		return found.iterator().next();
 	}
 	
@@ -85,9 +83,7 @@ class JLSMethodLocator extends MethodLocator {
 				}
 			}
 			
-			if (!applicable.isEmpty()) {
-				return getMostSpecific(applicable);
-			}
+			if (!applicable.isEmpty()) { return getMostSpecific(applicable); }
 		}
 		
 		throw new NoSuchMethodException(createNoSuchMethodMessage(clazz, name, args));
@@ -122,9 +118,7 @@ class JLSMethodLocator extends MethodLocator {
 	}
 	
 	private String toHumanReadableName(Class<?> clazz) {
-		if (clazz == null) {
-			return "null";
-		}
+		if (clazz == null) { return "null"; }
 		
 		return clazz.isArray() ? toHumanReadableName(clazz.getComponentType()) + "[]" : clazz.getName();
 	}

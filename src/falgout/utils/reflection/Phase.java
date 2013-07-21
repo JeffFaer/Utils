@@ -18,17 +18,13 @@ enum Phase {
 	THREE {
 		@Override
 		public boolean isApplicable(Class<?>[] args, Parameterized<?> p) {
-			if (!p.isVarArgs()) {
-				return false;
-			}
+			if (!p.isVarArgs()) { return false; }
 			
 			int k = args.length;
 			int n = p.getParameterTypes().length;
 			
 			for (int i = 0; i < n - 1; i++) {
-				if (!c.convert(args[i], p.getParameterTypes()[i])) {
-					return false;
-				}
+				if (!c.convert(args[i], p.getParameterTypes()[i])) { return false; }
 			}
 			
 			// check to see if the remaining arg is an array which is compatible
@@ -39,9 +35,7 @@ enum Phase {
 				return true;
 			} else if (k >= n) {
 				for (int i = n - 1; i < args.length; i++) {
-					if (!c.convert(args[i], p.getParameterTypes()[n - 1].getComponentType())) {
-						return false;
-					}
+					if (!c.convert(args[i], p.getParameterTypes()[n - 1].getComponentType())) { return false; }
 				}
 			}
 			
@@ -60,14 +54,10 @@ enum Phase {
 	}
 	
 	public boolean isApplicable(Class<?>[] args, Parameterized<?> p) {
-		if (p.isVarArgs()) {
-			return false;
-		}
+		if (p.isVarArgs()) { return false; }
 		
 		for (int i = 0; i < args.length; i++) {
-			if (!c.convert(args[i], p.getParameterTypes()[i])) {
-				return false;
-			}
+			if (!c.convert(args[i], p.getParameterTypes()[i])) { return false; }
 		}
 		return true;
 	}

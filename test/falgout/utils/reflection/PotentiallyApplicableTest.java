@@ -7,11 +7,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 public class PotentiallyApplicableTest {
-	public static void foo(Object one, Object two, Object... objects) {
-	}
+	public static void foo(Object one, Object two, Object... objects) {}
 	
-	public static void foo(Object one, Object two, Object three) {
-	}
+	public static void foo(Object one, Object two, Object three) {}
 	
 	private static final Parameterized.Method varargMethod;
 	private static final Parameterized.Method regularMethod;

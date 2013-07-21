@@ -5,8 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public final class ReflectionUtilities {
-	private ReflectionUtilities() {
-	}
+	private ReflectionUtilities() {}
 	
 	public static Class<?>[] getClasses(Object... args) {
 		Class<?>[] classes = new Class<?>[args.length];

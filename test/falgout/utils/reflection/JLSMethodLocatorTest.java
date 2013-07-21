@@ -13,17 +13,13 @@ public class JLSMethodLocatorTest {
 	private static final Class<?> CLAZZ = JLSMethodLocatorTest.class;
 	private static final String NAME = "foo";
 	
-	public static void foo(String o1, String o2, String... o3) {
-	}
+	public static void foo(String o1, String o2, String... o3) {}
 	
-	public static void foo(String o1, String o2, String o3) {
-	}
+	public static void foo(String o1, String o2, String o3) {}
 	
-	public static void foo(Object o1, Object o2, String o3) {
-	}
+	public static void foo(Object o1, Object o2, String o3) {}
 	
-	public static void foo(String o1, Object o2, Object o3) {
-	}
+	public static void foo(String o1, Object o2, Object o3) {}
 	
 	private static final Method m1;
 	private static final Method m2;

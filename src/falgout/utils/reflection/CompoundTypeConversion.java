@@ -27,13 +27,9 @@ public enum CompoundTypeConversion implements TypeConversion {
 	
 	@Override
 	public boolean convert(Class<?> from, Class<?> to) {
-		if (to == null) {
-			throw new IllegalArgumentException("to == null");
-		}
+		if (to == null) { throw new IllegalArgumentException("to == null"); }
 		for (TypeConversion t : conversions) {
-			if (t.convert(from, to)) {
-				return true;
-			}
+			if (t.convert(from, to)) { return true; }
 		}
 		return false;
 	}

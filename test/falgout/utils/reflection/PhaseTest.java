@@ -11,11 +11,9 @@ import java.io.Serializable;
 import org.junit.Test;
 
 public class PhaseTest {
-	public static void varargs(String s, Object o, int i, long l, Integer i2, Long l2, Serializable... objects) {
-	}
+	public static void varargs(String s, Object o, int i, long l, Integer i2, Long l2, Serializable... objects) {}
 	
-	public static void regular(String s, Object o, int i, long l, Integer i2, Long l2) {
-	}
+	public static void regular(String s, Object o, int i, long l, Integer i2, Long l2) {}
 	
 	private static final Parameterized.Method regularMethod;
 	private static final Parameterized.Method varargsMethod;
@@ -96,6 +94,5 @@ public class PhaseTest {
 		}
 	}
 	
-	public static void mixedBoxing(int i, int... is) {
-	}
+	public static void mixedBoxing(int i, int... is) {}
 }

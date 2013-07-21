@@ -20,9 +20,7 @@ class PotentiallyApplicable implements Predicate<Parameterized<?>> {
 	
 	@Override
 	public boolean test(Parameterized<?> t) {
-		if (!t.getName().equals(name)) {
-			return false;
-		}
+		if (!t.getName().equals(name)) { return false; }
 		
 		if (t.isVarArgs()) {
 			return arity >= t.getParameterTypes().length - 1;
