@@ -10,5 +10,5 @@ package falgout.utils.temp;
  * @param <T> the type of argument to test
  */
 public interface Predicate<T> {
-	public boolean test(T t);
+    public boolean test(T t);
 }
