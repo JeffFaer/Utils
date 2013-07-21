@@ -6,6 +6,7 @@ import static org.junit.Assert.assertSame;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,5 +42,16 @@ public class AbstractIteratorTest {
 		assertSame(elements.get(1), itr.next());
 		assertSame(elements.get(2), itr.next());
 		assertFalse(itr.hasNext());
+	}
+	
+	@Test(expected = NoSuchElementException.class)
+	public void NullIteratorWontWork() {
+		Iterator<String> i = new AbstractIterator<String>() {
+			@Override
+			protected String findNext() {
+				return null;
+			}
+		};
+		i.next();
 	}
 }
