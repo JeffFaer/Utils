@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import java.awt.AWTException;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Robot;
@@ -23,6 +24,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.Element;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 import org.junit.After;
 import org.junit.Before;
@@ -349,5 +356,39 @@ public class JConsoleTest {
     @Test(expected = IllegalStateException.class)
     public void CannotCreateExistingOutputStream() {
         c.createWriter(JConsole.OUTPUT);
+    }
+    
+    @Test
+    public void CannotTypeInOutputStreamText() throws InvocationTargetException, InterruptedException {
+        c.getWriter(JConsole.OUTPUT).write("foobar");
+        keyType(KeyEvent.VK_LEFT, 3);
+        keyType(KeyEvent.VK_A);
+        
+        checkText("foobara");
+    }
+    
+    @Test
+    public void AlteringStylePropogatesChanges() throws InvocationTargetException, InterruptedException {
+        c.getWriter(JConsole.OUTPUT).write("one");
+        c.getWriter(JConsole.ERROR).write("two");
+        c.getWriter(JConsole.OUTPUT).write("three");
+        
+        SwingUtilities.invokeAndWait(new Runnable() {
+            @Override
+            public void run() {
+                Style s = c.getStyle(JConsole.OUTPUT);
+                StyleConstants.setForeground(s, Color.GREEN);
+                
+                StyledDocument d = c.getTextPane().getStyledDocument();
+                int offset = 0;
+                while (offset < d.getLength()) {
+                    Element e = d.getCharacterElement(offset);
+                    if (e.getAttributes().containsAttribute(AttributeSet.NameAttribute, s.getName())) {
+                        assertEquals(new SimpleAttributeSet(s), new SimpleAttributeSet(e.getAttributes()));
+                    }
+                    offset = e.getEndOffset();
+                }
+            }
+        });
     }
 }

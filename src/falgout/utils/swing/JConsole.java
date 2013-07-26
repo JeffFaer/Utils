@@ -3,13 +3,11 @@ package falgout.utils.swing;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -21,14 +19,16 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.UndoableEditListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Document;
+import javax.swing.text.DocumentFilter;
 import javax.swing.text.Element;
 import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.Position;
-import javax.swing.text.Segment;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -36,145 +36,33 @@ import javax.swing.text.StyledDocument;
 import javax.swing.text.StyledEditorKit;
 
 public class JConsole extends JComponent {
-    private class ConsoleDocument implements StyledDocument, Serializable {
-        private static final long serialVersionUID = -7203947224984750337L;
-        
-        private final StyledDocument d;
-        
-        public ConsoleDocument(StyledDocument d) {
-            this.d = d;
-        }
-        
+    private class ConsoleFilter extends DocumentFilter {
         @Override
-        public Style addStyle(String nm, Style parent) {
-            return d.addStyle(nm, parent);
-        }
-        
-        @Override
-        public void removeStyle(String nm) {
-            d.removeStyle(nm);
-        }
-        
-        @Override
-        public Style getStyle(String nm) {
-            return d.getStyle(nm);
-        }
-        
-        @Override
-        public void setCharacterAttributes(int offset, int length, AttributeSet s, boolean replace) {
-            d.setCharacterAttributes(offset, length, s, replace);
-        }
-        
-        @Override
-        public void setParagraphAttributes(int offset, int length, AttributeSet s, boolean replace) {
-            d.setParagraphAttributes(offset, length, s, replace);
-        }
-        
-        @Override
-        public void setLogicalStyle(int pos, Style s) {
-            d.setLogicalStyle(pos, s);
-        }
-        
-        @Override
-        public Style getLogicalStyle(int p) {
-            return d.getLogicalStyle(p);
-        }
-        
-        @Override
-        public Element getParagraphElement(int pos) {
-            return d.getParagraphElement(pos);
-        }
-        
-        @Override
-        public Element getCharacterElement(int pos) {
-            return d.getCharacterElement(pos);
-        }
-        
-        @Override
-        public Color getForeground(AttributeSet attr) {
-            return d.getForeground(attr);
-        }
-        
-        @Override
-        public Color getBackground(AttributeSet attr) {
-            return d.getBackground(attr);
-        }
-        
-        @Override
-        public Font getFont(AttributeSet attr) {
-            return d.getFont(attr);
-        }
-        
-        @Override
-        public int getLength() {
-            return d.getLength();
-        }
-        
-        @Override
-        public void addDocumentListener(DocumentListener listener) {
-            d.addDocumentListener(listener);
-        }
-        
-        @Override
-        public void removeDocumentListener(DocumentListener listener) {
-            d.removeDocumentListener(listener);
-        }
-        
-        @Override
-        public void addUndoableEditListener(UndoableEditListener listener) {
-            d.addUndoableEditListener(listener);
-        }
-        
-        @Override
-        public void removeUndoableEditListener(UndoableEditListener listener) {
-            d.removeUndoableEditListener(listener);
-        }
-        
-        @Override
-        public Object getProperty(Object key) {
-            return d.getProperty(key);
-        }
-        
-        @Override
-        public void putProperty(Object key, Object value) {
-            d.putProperty(key, value);
-        }
-        
-        @Override
-        public void remove(int offs, int len) throws BadLocationException {
-            if (canModify(offs, len)) {
-                d.remove(offs, len);
-            }
-        }
-        
-        @Override
-        public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
-            boolean isInput = isInput(a);
+        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
+                throws BadLocationException {
+            StyledDocument d = (StyledDocument) fb.getDocument();
+            boolean isInput = isInput(attr);
             boolean isNewLine = false;
             boolean canModify = false;
             if (isInput) {
-                isNewLine = isNewLine(str);
+                isNewLine = isNewLine(string);
                 if (!isNewLine) {
-                    int len = isInput(getCharacterElement(offset - 1)) ? 0 : 1;
-                    canModify = canModify(offset, len);
+                    int len = isInput(d.getCharacterElement(offset - 1)) ? 0 : 1;
+                    canModify = canModify(d, offset, len);
                 }
             }
-            offset = canModify ? offset : getLength();
+            offset = canModify ? offset : d.getLength();
             
-            d.insertString(offset, str, a);
+            super.insertString(fb, offset, string, attr);
             
-            if (textPane.getSelectedText() == null) {
-                textPane.setCaretPosition(offset + str.length());
-            } else {
-                textPane.moveCaretPosition(offset + str.length());
-            }
+            moveCaret(offset + string.length());
             
             if (!isInput) {
-                fireConsoleEvent(a.getAttribute(AttributeSet.NameAttribute).toString(), str);
+                fireConsoleEvent(attr.getAttribute(AttributeSet.NameAttribute).toString(), string);
             }
             
             if (isInput && isNewLine) {
-                String content = getInputLine();
+                String content = getInputLine(d);
                 inputSource.write(content);
                 inputSource.flush();
                 
@@ -195,11 +83,11 @@ public class JConsole extends JComponent {
             return str.contains("\n");
         }
         
-        private boolean canModify(int offset, int len) throws BadLocationException {
-            while (offset < getLength()) {
-                Element e = getCharacterElement(offset);
+        private boolean canModify(StyledDocument d, int offset, int len) throws BadLocationException {
+            while (offset < d.getLength()) {
+                Element e = d.getCharacterElement(offset);
                 if (isInput(e)) {
-                    String content = getContent(e);
+                    String content = getContent(d, e);
                     
                     if (isNewLine(content)) { return false; }
                 } else if (len > 0) { return false; }
@@ -212,19 +100,23 @@ public class JConsole extends JComponent {
             return true;
         }
         
-        private String getContent(Element e) throws BadLocationException {
-            return getText(e.getStartOffset(), e.getEndOffset() - e.getStartOffset());
+        private String getContent(Document d, Element e) throws BadLocationException {
+            return d.getText(e.getStartOffset(), e.getEndOffset() - e.getStartOffset());
+        }
+        
+        private void moveCaret(int pos) {
+            textPane.setCaretPosition(pos);
         }
         
         // reverse search the document for a full line of INPUT
-        private String getInputLine() throws BadLocationException {
+        private String getInputLine(StyledDocument d) throws BadLocationException {
             List<String> pieces = new ArrayList<>();
             
-            int offset = getLength();
+            int offset = d.getLength();
             while (offset >= 0) {
-                Element e = getCharacterElement(offset);
+                Element e = d.getCharacterElement(offset);
                 if (isInput(e)) {
-                    String content = getContent(e);
+                    String content = getContent(d, e);
                     if (isNewLine(content) && !pieces.isEmpty()) {
                         break;
                     }
@@ -244,43 +136,19 @@ public class JConsole extends JComponent {
         }
         
         @Override
-        public String getText(int offset, int length) throws BadLocationException {
-            return d.getText(offset, length);
+        public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
+            if (canModify((StyledDocument) fb.getDocument(), offset, length)) {
+                super.remove(fb, offset, length);
+            } else {
+                moveCaret(fb.getDocument().getLength());
+            }
         }
         
         @Override
-        public void getText(int offset, int length, Segment txt) throws BadLocationException {
-            d.getText(offset, length, txt);
-        }
-        
-        @Override
-        public Position getStartPosition() {
-            return d.getStartPosition();
-        }
-        
-        @Override
-        public Position getEndPosition() {
-            return d.getEndPosition();
-        }
-        
-        @Override
-        public Position createPosition(int offs) throws BadLocationException {
-            return d.createPosition(offs);
-        }
-        
-        @Override
-        public Element[] getRootElements() {
-            return d.getRootElements();
-        }
-        
-        @Override
-        public Element getDefaultRootElement() {
-            return d.getDefaultRootElement();
-        }
-        
-        @Override
-        public void render(Runnable r) {
-            d.render(r);
+        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+                throws BadLocationException {
+            remove(fb, offset, length);
+            insertString(fb, textPane.getCaretPosition(), text, attrs);
         }
     }
     
@@ -330,10 +198,17 @@ public class JConsole extends JComponent {
                 return new SimpleAttributeSet(in);
             }
         });
-        textPane.setStyledDocument(new ConsoleDocument(textPane.getStyledDocument()));
+        StyledDocument doc = textPane.getStyledDocument();
+        DocumentFilter filter = new ConsoleFilter();
+        if (doc instanceof AbstractDocument) {
+            ((AbstractDocument) doc).setDocumentFilter(filter);
+        } else {
+            DefaultStyledDocument d = new DefaultStyledDocument();
+            d.setDocumentFilter(filter);
+            textPane.setDocument(d);
+        }
         
-        defaultStyle = textPane.addStyle(DEFAULT, null);
-        defaultStyle.addAttributes(DEFAULT_STYLE);
+        defaultStyle = createStyle(DEFAULT, DEFAULT_STYLE);
         
         PipedReader pipe = new PipedReader();
         input = new BufferedReader(pipe);
@@ -373,13 +248,37 @@ public class JConsole extends JComponent {
         synchronized (outputs) {
             checkName(name);
             
-            Style s = textPane.addStyle(name, defaultStyle);
-            s.addAttributes(style);
+            createStyle(name, style);
             PrintWriter w = new PrintWriter(new StyledDocumentAppender(textPane.getStyledDocument(), name), true);
             outputs.put(name, w);
             
             return w;
         }
+    }
+    
+    private Style createStyle(String name, AttributeSet style) {
+        Style s = textPane.addStyle(name, defaultStyle);
+        s.addAttributes(style);
+        // propagate changes to this Style to all text written with it.
+        s.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                StyledDocument d = textPane.getStyledDocument();
+                int offset = 0;
+                while (offset < d.getLength()) {
+                    Element elem = d.getCharacterElement(offset);
+                    Style s = (Style) e.getSource();
+                    String name = s.getName();
+                    if (elem.getAttributes().containsAttribute(AttributeSet.NameAttribute, name)) {
+                        d.setCharacterAttributes(elem.getStartOffset(), elem.getEndOffset() - elem.getStartOffset(), s,
+                                true);
+                    }
+                    
+                    offset = elem.getEndOffset();
+                }
+            }
+        });
+        return s;
     }
     
     private void checkName(String name) {
@@ -445,6 +344,8 @@ public class JConsole extends JComponent {
                     case "now":
                         c.getWriter(INPUT).write("foo");
                         c.getWriter(ERROR).write("bar");
+                        
+                        StyleConstants.setBackground(c.getStyle(INPUT), Color.BLACK);
                         break;
                     default:
                         System.out.println(text);
