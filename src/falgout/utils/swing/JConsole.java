@@ -16,7 +16,6 @@ import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
@@ -223,7 +222,7 @@ public class JConsole extends JComponent {
         createWriter(INPUT, INPUT_STYLE);
         
         setLayout(new BorderLayout());
-        add(new JScrollPane(textPane));
+        add(textPane);
         textPane.setPreferredSize(new Dimension(500, 300));
     }
     

@@ -3,9 +3,8 @@ package falgout.utils.swing;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.ExecutionException;
 
-import javax.swing.SwingUtilities;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -26,21 +25,18 @@ public class DocumentAppender extends Writer {
     public void write(char[] cbuf, int off, int len) throws IOException {
         final String s = new String(cbuf, off, len);
         
-        if (SwingUtilities.isEventDispatchThread()) {
-            doWrite(s);
-        } else {
-            try {
-                SwingUtilities.invokeAndWait(new Runnable() {
-                    @Override
-                    public void run() {
-                        doWrite(s);
-                    }
-                });
-            } catch (InvocationTargetException e) {
-                throw new Error(e);
-            } catch (InterruptedException e) {
-                throw new InterruptedIOException(e.getMessage());
-            }
+        try {
+            SwingUtils.runOnEDT(new Runnable() {
+                @Override
+                public void run() {
+                    doWrite(s);
+                }
+            });
+        } catch (InterruptedException e) {
+            throw new InterruptedIOException(e.getMessage());
+        } catch (ExecutionException e) {
+            // Do we want to use e.getCause() here?
+            throw new Error("This shouldn't happen, we're already catching the only Exception that could be thrown", e);
         }
     }
     
