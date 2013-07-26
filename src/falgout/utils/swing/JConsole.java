@@ -15,9 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JTextPane;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.AbstractDocument;
@@ -151,9 +149,25 @@ public class JConsole extends JComponent {
         }
     }
     
+    /**
+     * The name of the default {@code Style}
+     */
     public static final String DEFAULT = "default";
+    /**
+     * The name of the default "output" {@code Style}
+     */
     public static final String OUTPUT = "out";
+    /**
+     * The name of the default "error" {@code Style}
+     */
     public static final String ERROR = "err";
+    /**
+     * The name of the default "input" {@code Style}. User input is decorated
+     * with this {@code Style} and is then available from the
+     * {@link #getInput() BufferedReader}. Using the {@link #getWriter(String)
+     * PrintWriter} for this {@code Style} simulates user input: it is also
+     * available via the {@code BufferedReader}.
+     */
     public static final String INPUT = "in";
     
     private static final long serialVersionUID = 5938244600144385811L;
@@ -230,18 +244,54 @@ public class JConsole extends JComponent {
         return textPane;
     }
     
+    /**
+     * Returns a {@code BufferedReader} which is sources by user input to this
+     * component. This method is thread safe.
+     * 
+     * @return A {@code BufferedReader} that is safe for use off of the EDT.
+     */
     public BufferedReader getInput() {
         return input;
     }
     
+    /**
+     * Returns a {@code PrintWriter} wrapping a
+     * {@link falgout.utils.swing.StyledDocumentAppender} for this component.
+     * This method is thread safe.
+     * 
+     * @param name The name of the {@code Style}.
+     * @return A {@code PrintWriter} that is safe for use off of the EDT.
+     */
     public PrintWriter getWriter(String name) {
         return outputs.get(name);
     }
     
+    /**
+     * Creates a new {@code StyledDocumentAppender} which will appear as the
+     * {@link #DEFAULT default Style}. This method is thread safe.
+     * 
+     * @param name The name of the writer
+     * @return A {@code PrintWriter} that is safe for use off of the EDT.
+     * 
+     * @throws IllegalStateException If a writer already exists for
+     *         the {@code name}.
+     */
     public PrintWriter createWriter(String name) {
         return createWriter(name, SimpleAttributeSet.EMPTY);
     }
     
+    /**
+     * Creates a new {@code StyledDocumentAppender} and a matching {@code Style}
+     * which will have all of the given attributes. This method is thread safe.
+     * 
+     * @param name The name of the writer and {@code Style}
+     * @param style The attributes for the {@code Style}. The parent of this
+     *        {@code Style} will be the {@link #DEFAULT default Style}.
+     * @return A {@code PrintWriter} that is safe for use off of the EDT.
+     * 
+     * @throws IllegalStateException If a writer already exists for the
+     *         {@code name}.
+     */
     public PrintWriter createWriter(String name, AttributeSet style) {
         checkName(name);
         synchronized (outputs) {
@@ -310,52 +360,6 @@ public class JConsole extends JComponent {
                 }
                 ((ConsoleListener) listeners[i + 1]).textWritten(e);
             }
-        }
-    }
-    
-    public static void main(String[] args) throws IOException {
-        final JConsole c = new JConsole();
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                JFrame frame = new JFrame();
-                frame.setContentPane(c);
-                frame.pack();
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setLocationByPlatform(true);
-                frame.setVisible(true);
-                
-                c.getWriter(INPUT).write("foo");
-                c.getWriter(OUTPUT).write("bar");
-            }
-        });
-        
-        c.addConsoleListener(new ConsoleListener() {
-            @Override
-            public void textWritten(ConsoleEvent e) {
-                String text = e.getText().trim();
-                switch (e.getWriter()) {
-                case INPUT:
-                    switch (text) {
-                    case "exit":
-                        System.exit(0);
-                        break;
-                    case "now":
-                        c.getWriter(INPUT).write("foo");
-                        c.getWriter(ERROR).write("bar");
-                        
-                        StyleConstants.setBackground(c.getStyle(INPUT), Color.BLACK);
-                        break;
-                    default:
-                        System.out.println(text);
-                    }
-                }
-            }
-        });
-        
-        String line;
-        while ((line = c.getInput().readLine()) != null) {
-            System.out.println(">" + line);
         }
     }
 }
