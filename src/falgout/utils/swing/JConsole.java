@@ -160,12 +160,17 @@ public class JConsole extends JComponent {
                 }
             }
             offset = canModify ? offset : getLength();
+            
             d.insertString(offset, str, a);
             
             if (textPane.getSelectedText() == null) {
                 textPane.setCaretPosition(offset + str.length());
             } else {
                 textPane.moveCaretPosition(offset + str.length());
+            }
+            
+            if (!isInput) {
+                fireConsoleEvent(a.getAttribute(AttributeSet.NameAttribute).toString(), str);
             }
             
             if (isInput && isNewLine) {
@@ -279,22 +284,6 @@ public class JConsole extends JComponent {
         }
     }
     
-    private class ConsoleWriter extends StyledDocumentAppender {
-        public ConsoleWriter(String name) {
-            super(textPane.getStyledDocument(), name);
-        }
-        
-        @Override
-        protected void doWrite(String s) {
-            super.doWrite(s);
-            
-            // INPUT events are handled by the Document
-            if (!getStyleName().equals(INPUT)) {
-                fireConsoleEvent(getStyleName(), s);
-            }
-        }
-    }
-    
     public static final String DEFAULT = "default";
     public static final String OUTPUT = "out";
     public static final String ERROR = "err";
@@ -386,7 +375,7 @@ public class JConsole extends JComponent {
             
             Style s = textPane.addStyle(name, defaultStyle);
             s.addAttributes(style);
-            PrintWriter w = new PrintWriter(new ConsoleWriter(name), true);
+            PrintWriter w = new PrintWriter(new StyledDocumentAppender(textPane.getStyledDocument(), name), true);
             outputs.put(name, w);
             
             return w;

@@ -335,7 +335,8 @@ public class JConsoleTest {
     }
     
     @Test
-    public void TypingEnterFromMiddleOfInputDoesntSplitLine() throws IOException, InvocationTargetException, InterruptedException {
+    public void TypingEnterFromMiddleOfInputDoesntSplitLine() throws IOException, InvocationTargetException,
+            InterruptedException {
         c.getWriter(JConsole.INPUT).write("foobar");
         keyType(KeyEvent.VK_LEFT, 3);
         keyType(KeyEvent.VK_ENTER);
@@ -343,5 +344,10 @@ public class JConsoleTest {
         assertEquals("foobar", c.getInput().readLine());
         verify(listener).textWritten(new ConsoleEvent(c, JConsole.INPUT, "foobar\n"));
         checkText("foobar\n");
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void CannotCreateExistingOutputStream() {
+        c.createWriter(JConsole.OUTPUT);
     }
 }
