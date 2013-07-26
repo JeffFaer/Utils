@@ -76,7 +76,7 @@ public class JConsole extends JComponent {
         }
         
         private boolean isNewLine(String str) {
-            // DefaultEditorKit.InsertBreakAction uses only \n
+            // DefaultEditorKit.InsertBreakAction uses only \n for new lines
             return str.contains("\n");
         }
         
@@ -237,7 +237,7 @@ public class JConsole extends JComponent {
         
         setLayout(new BorderLayout());
         add(textPane);
-        textPane.setPreferredSize(new Dimension(500, 300));
+        setPreferredSize(new Dimension(500, 300));
     }
     
     public JTextPane getTextPane() {
@@ -312,12 +312,12 @@ public class JConsole extends JComponent {
         s.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
+                Style s = (Style) e.getSource();
+                String name = s.getName();
                 StyledDocument d = textPane.getStyledDocument();
                 int offset = 0;
                 while (offset < d.getLength()) {
                     Element elem = d.getCharacterElement(offset);
-                    Style s = (Style) e.getSource();
-                    String name = s.getName();
                     if (elem.getAttributes().containsAttribute(AttributeSet.NameAttribute, name)) {
                         d.setCharacterAttributes(elem.getStartOffset(), elem.getEndOffset() - elem.getStartOffset(), s,
                                 true);
