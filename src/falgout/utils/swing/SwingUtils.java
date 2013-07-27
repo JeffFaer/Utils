@@ -2,6 +2,8 @@ package falgout.utils.swing;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -18,6 +20,21 @@ public final class SwingUtils {
         }
         
         return parent == null ? null : clazz.cast(parent);
+    }
+    
+    public static <C extends Component> List<? extends C> getChildren(Class<C> clazz, Container c) {
+        List<C> children = new ArrayList<>();
+        
+        for (Component child : c.getComponents()) {
+            if (clazz.isInstance(child)) {
+                children.add(clazz.cast(child));
+            }
+            if (child instanceof Container) {
+                children.addAll(getChildren(clazz, (Container) child));
+            }
+        }
+        
+        return children;
     }
     
     public static void runOnEDT(final Runnable r) throws InterruptedException, ExecutionException {

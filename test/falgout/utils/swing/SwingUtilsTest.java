@@ -1,5 +1,6 @@
 package falgout.utils.swing;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -10,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import org.junit.Before;
@@ -36,6 +38,12 @@ public class SwingUtilsTest {
         assertSame(top, SwingUtils.getParent(JFrame.class, bot));
         assertSame(mid, SwingUtils.getParent(JPanel.class, bot));
         assertNull(SwingUtils.getParent(JFrame.class, top));
+    }
+    
+    @Test
+    public void GetChildrenTest() {
+        assertSame(bot, SwingUtils.getChildren(JButton.class, top).get(0));
+        assertEquals(0, SwingUtils.getChildren(JTextField.class, top).size());
     }
     
     @Test
