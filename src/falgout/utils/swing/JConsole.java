@@ -74,7 +74,7 @@ public class JConsole extends JComponent {
         }
         
         private boolean isInput(AttributeSet a) {
-            return new SimpleAttributeSet(a).equals(textPane.getStyle(INPUT));
+            return a.isEqual(textPane.getStyle(INPUT));
         }
         
         private boolean isNewLine(String str) {
@@ -315,15 +315,20 @@ public class JConsole extends JComponent {
                 Style s = (Style) e.getSource();
                 String name = s.getName();
                 StyledDocument d = textPane.getStyledDocument();
-                int offset = 0;
-                while (offset < d.getLength()) {
-                    Element elem = d.getCharacterElement(offset);
-                    if (elem.getAttributes().containsAttribute(AttributeSet.NameAttribute, name)) {
-                        d.setCharacterAttributes(elem.getStartOffset(), elem.getEndOffset() - elem.getStartOffset(), s,
-                                true);
-                    }
+                Iterator<Element> i = new CharacterElementIterator(d);
+                while (i.hasNext()) {
+                    Element elem = i.next();
+                    AttributeSet attrs = elem.getAttributes();
+                    String appliedStyle = (String) attrs.getAttribute(AttributeSet.NameAttribute);
                     
-                    offset = elem.getEndOffset();
+                    // update any children of this Style as well
+                    do {
+                        if (attrs.containsAttribute(AttributeSet.NameAttribute, name)) {
+                            d.setCharacterAttributes(elem.getStartOffset(),
+                                    elem.getEndOffset() - elem.getStartOffset(), getStyle(appliedStyle), true);
+                            break;
+                        }
+                    } while ((attrs = attrs.getResolveParent()) != null);
                 }
             }
         });

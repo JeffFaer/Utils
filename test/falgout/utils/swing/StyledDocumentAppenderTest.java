@@ -1,17 +1,17 @@
 package falgout.utils.swing;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.io.Writer;
 
-import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Element;
-import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyledDocument;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,13 +37,9 @@ public class StyledDocumentAppenderTest {
         w1.write("foo");
         w2.write("bar");
         
-        assertEquals(s1, getElement(0).getAttributes());
-        assertEquals(s2, getElement(3).getAttributes());
-        Assert.assertEquals("foobar", d.getText(0, d.getLength()));
-    }
-    
-    private void assertEquals(Style s, AttributeSet attributes) {
-        Assert.assertEquals(new SimpleAttributeSet(s), attributes);
+        assertTrue(s1.isEqual(getElement(0).getAttributes()));
+        assertTrue(s2.isEqual(getElement(3).getAttributes()));
+        assertEquals("foobar", d.getText(0, d.getLength()));
     }
     
     private Element getElement(int off) {

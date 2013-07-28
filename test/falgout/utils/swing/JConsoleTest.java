@@ -3,6 +3,7 @@ package falgout.utils.swing;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -20,6 +21,7 @@ import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.JFrame;
@@ -27,7 +29,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.Element;
-import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -385,9 +386,31 @@ public class JConsoleTest {
                 Iterator<Element> i = new CharacterElementIterator(d);
                 while (i.hasNext()) {
                     Element e = i.next();
-                    if (e.getAttributes().containsAttribute(AttributeSet.NameAttribute, s.getName())) {
-                        assertEquals(new SimpleAttributeSet(s), new SimpleAttributeSet(e.getAttributes()));
+                    AttributeSet attrs = e.getAttributes();
+                    if (attrs.containsAttribute(AttributeSet.NameAttribute, s.getName())) {
+                        assertEquals(Color.GREEN, StyleConstants.getForeground(attrs));
                     }
+                }
+            }
+        });
+    }
+    
+    @Test
+    public void AlteringParentStylePropogatesChanges() throws InterruptedException, ExecutionException {
+        c.getWriter(JConsole.OUTPUT).write("out");
+        c.getWriter(JConsole.ERROR).write("err");
+        
+        SwingUtils.runOnEDT(new Runnable() {
+            @Override
+            public void run() {
+                Style s = c.getStyle(JConsole.DEFAULT);
+                StyleConstants.setBold(s, true);
+                
+                StyledDocument d = c.getTextPane().getStyledDocument();
+                Iterator<Element> i = new CharacterElementIterator(d);
+                while (i.hasNext()) {
+                    Element e = i.next();
+                    assertTrue(StyleConstants.isBold(e.getAttributes()));
                 }
             }
         });
