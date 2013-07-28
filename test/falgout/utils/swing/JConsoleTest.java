@@ -19,6 +19,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.JFrame;
@@ -380,13 +381,13 @@ public class JConsoleTest {
                 StyleConstants.setForeground(s, Color.GREEN);
                 
                 StyledDocument d = c.getTextPane().getStyledDocument();
-                int offset = 0;
-                while (offset < d.getLength()) {
-                    Element e = d.getCharacterElement(offset);
+                
+                Iterator<Element> i = new CharacterElementIterator(d);
+                while (i.hasNext()) {
+                    Element e = i.next();
                     if (e.getAttributes().containsAttribute(AttributeSet.NameAttribute, s.getName())) {
                         assertEquals(new SimpleAttributeSet(s), new SimpleAttributeSet(e.getAttributes()));
                     }
-                    offset = e.getEndOffset();
                 }
             }
         });

@@ -10,8 +10,10 @@ import java.io.PipedWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import javax.swing.JComponent;
@@ -81,8 +83,9 @@ public class JConsole extends JComponent {
         }
         
         private boolean canModify(StyledDocument d, int offset, int len) throws BadLocationException {
-            while (offset < d.getLength()) {
-                Element e = d.getCharacterElement(offset);
+            Iterator<Element> i = new CharacterElementIterator(d, offset);
+            while (i.hasNext()) {
+                Element e = i.next();
                 if (isInput(e)) {
                     String content = getContent(d, e);
                     
@@ -92,7 +95,6 @@ public class JConsole extends JComponent {
                 if (len > 0) {
                     len -= e.getEndOffset() - offset;
                 }
-                offset = e.getEndOffset();
             }
             return true;
         }
@@ -109,9 +111,9 @@ public class JConsole extends JComponent {
         private String getInputLine(StyledDocument d) throws BadLocationException {
             List<String> pieces = new ArrayList<>();
             
-            int offset = d.getLength();
-            while (offset >= 0) {
-                Element e = d.getCharacterElement(offset);
+            ListIterator<Element> i = new CharacterElementIterator(d, d.getLength() - 1);
+            while (i.hasPrevious()) {
+                Element e = i.previous();
                 if (isInput(e)) {
                     String content = getContent(d, e);
                     if (isNewLine(content) && !pieces.isEmpty()) {
@@ -120,8 +122,6 @@ public class JConsole extends JComponent {
                     
                     pieces.add(content);
                 }
-                
-                offset = e.getStartOffset() - 1;
             }
             
             Collections.reverse(pieces);
