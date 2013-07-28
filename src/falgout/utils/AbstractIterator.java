@@ -4,13 +4,13 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public abstract class AbstractIterator<E> implements Iterator<E> {
-    private boolean init = false;
+    protected boolean init = false;
     protected E last;
-    private E next;
+    protected E next;
     
     public AbstractIterator() {}
     
-    private boolean init() {
+    protected boolean init() {
         if (!init) {
             next = findNext();
             init = true;

@@ -12,9 +12,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class AbstractIteratorTest {
-    private static final List<String> elements = Arrays.asList("1", "2", "3");
+    protected static final List<String> elements = Arrays.asList("1", "2", "3");
     
-    private Iterator<String> itr;
+    protected Iterator<String> itr;
     
     @Before
     public void init() {
