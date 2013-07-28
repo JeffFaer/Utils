@@ -27,13 +27,7 @@ enum Phase {
                 if (!c.convert(args[i], p.getParameterTypes()[i])) { return false; }
             }
             
-            // check to see if the remaining arg is an array which is compatible
-            // with the var-arg array
-            if (k == n
-                    && (args[n - 1] == null || args[n - 1].isArray()
-                            && p.getParameterTypes()[n - 1].isAssignableFrom(args[n - 1]))) {
-                return true;
-            } else if (k >= n) {
+            if (k >= n) {
                 for (int i = n - 1; i < args.length; i++) {
                     if (!c.convert(args[i], p.getParameterTypes()[n - 1].getComponentType())) { return false; }
                 }
@@ -54,7 +48,8 @@ enum Phase {
     }
     
     public boolean isApplicable(Class<?>[] args, Parameterized<?> p) {
-        if (p.isVarArgs()) { return false; }
+        // var args methods are actually treated as regular methods whose last
+        // parameter is an array during method resolution.
         
         for (int i = 0; i < args.length; i++) {
             if (!c.convert(args[i], p.getParameterTypes()[i])) { return false; }

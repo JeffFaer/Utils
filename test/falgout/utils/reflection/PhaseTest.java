@@ -28,6 +28,9 @@ public class PhaseTest {
         }
     }
     
+    private static final Class<?>[] varArgsParams = new Class<?>[] { String.class, Object.class, int.class, long.class,
+            Integer.class, Long.class, String.class };
+    
     private static final Class<?>[] SUBTYPING = new Class<?>[] { String.class, String.class, byte.class, byte.class,
             Integer.class, Long.class };
     private static final Class<?>[] BOXING = new Class<?>[] { String.class, Object.class, int.class, long.class,
@@ -41,7 +44,7 @@ public class PhaseTest {
     @Test
     public void PhaseOneTest() {
         assertTrue(ONE.isApplicable(regularMethod.getParameterTypes(), regularMethod));
-        assertFalse(ONE.isApplicable(varargsMethod.getParameterTypes(), varargsMethod));
+        assertFalse(ONE.isApplicable(varArgsParams, varargsMethod));
         
         assertTrue(ONE.isApplicable(SUBTYPING, regularMethod));
         assertFalse(ONE.isApplicable(BOXING, regularMethod));
@@ -52,7 +55,7 @@ public class PhaseTest {
     @Test
     public void PhaseTwoTest() {
         assertTrue(TWO.isApplicable(regularMethod.getParameterTypes(), regularMethod));
-        assertFalse(TWO.isApplicable(varargsMethod.getParameterTypes(), varargsMethod));
+        assertFalse(TWO.isApplicable(varArgsParams, varargsMethod));
         
         assertTrue(TWO.isApplicable(SUBTYPING, regularMethod));
         assertTrue(TWO.isApplicable(BOXING, regularMethod));
@@ -80,19 +83,5 @@ public class PhaseTest {
                 Integer.class, Long.class, String[].class }, varargsMethod));
         assertFalse(THREE.isApplicable(new Class<?>[] { String.class, Object.class, int.class, long.class,
                 Integer.class, Long.class, String.class, Object.class }, varargsMethod));
-        
-        assertTrue(THREE.isApplicable(new Class<?>[] { int.class, int[].class }, MIXED));
-        assertTrue(THREE.isApplicable(new Class<?>[] { int.class, null }, MIXED));
     }
-    
-    private static final Parameterized.Method MIXED;
-    static {
-        try {
-            MIXED = new Parameterized.Method(PhaseTest.class.getMethod("mixedBoxing", int.class, int[].class));
-        } catch (NoSuchMethodException e) {
-            throw new Error(e);
-        }
-    }
-    
-    public static void mixedBoxing(int i, int... is) {}
 }

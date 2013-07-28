@@ -78,4 +78,24 @@ public class JLSMethodLocatorTest {
     public void VarArgsWithNullArray() throws AmbiguousDeclarationException, NoSuchMethodException {
         assertEquals(m1, l.getMethod(Arrays.asList(m1), CLAZZ, NAME, String.class, String.class, null));
     }
+    
+    public static void foo(Object... args) {}
+    
+    public static void foo(Object[]... args) {}
+    
+    private static final Method m5;
+    @SuppressWarnings("unused") private static final Method m6;
+    static {
+        try {
+            m5 = CLAZZ.getMethod(NAME, Object[].class);
+            m6 = CLAZZ.getMethod(NAME, Object[][].class);
+        } catch (NoSuchMethodException e) {
+            throw new Error(e);
+        }
+    }
+    
+    @Test
+    public void PicksLowerMagnitudeVarArgs() throws NoSuchMethodException, AmbiguousDeclarationException {
+        assertEquals(m5, l.getMethod(CLAZZ, NAME, Object[].class));
+    }
 }
