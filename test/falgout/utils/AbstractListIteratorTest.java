@@ -24,8 +24,12 @@ public class AbstractListIteratorTest extends AbstractIteratorTest {
             
             @Override
             protected String getElement(int index) {
-                if (index < 0 || index >= elements.size()) { return null; }
                 return elements.get(index);
+            }
+            
+            @Override
+            protected int getUpperBound() {
+                return elements.size();
             }
         };
     }
@@ -46,6 +50,11 @@ public class AbstractListIteratorTest extends AbstractIteratorTest {
             @Override
             protected Object getElement(int index) {
                 return null;
+            }
+            
+            @Override
+            protected int getUpperBound() {
+                return 0;
             }
         }.next();
     }

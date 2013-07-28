@@ -28,7 +28,12 @@ public abstract class ElementIterator extends AbstractListIterator<Element> {
     
     @Override
     protected int getPreviousIndex(Element last, int index) {
-        Element e = getElement(last.getStartOffset() - 1);
-        return e == null ? -1 : e.getStartOffset();
+        int i = last.getStartOffset() - 1;
+        return i < 0 ? i : getElement(i).getStartOffset();
+    }
+    
+    @Override
+    protected int getUpperBound() {
+        return d.getLength();
     }
 }

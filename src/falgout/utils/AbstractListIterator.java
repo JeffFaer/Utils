@@ -81,7 +81,7 @@ public abstract class AbstractListIterator<E> extends AbstractIterator<E> implem
     @Override
     protected E findNext() {
         nextIndex = init ? getNextIndex(last, lastIndex) : lastIndex;
-        return getElement(nextIndex);
+        return getElementCheckBound(nextIndex);
     }
     
     protected E findPrevious() {
@@ -90,7 +90,12 @@ public abstract class AbstractListIterator<E> extends AbstractIterator<E> implem
     
     private E findPrevious(boolean useLastIndex) {
         previousIndex = useLastIndex ? lastIndex : getPreviousIndex(last, lastIndex);
-        return getElement(previousIndex);
+        return getElementCheckBound(previousIndex);
+    }
+    
+    private E getElementCheckBound(int index) {
+        if (index < 0 || index >= getUpperBound()) { return null; }
+        return getElement(index);
     }
     
     protected abstract int getNextIndex(E last, int index);
@@ -98,4 +103,6 @@ public abstract class AbstractListIterator<E> extends AbstractIterator<E> implem
     protected abstract int getPreviousIndex(E last, int index);
     
     protected abstract E getElement(int index);
+    
+    protected abstract int getUpperBound();
 }

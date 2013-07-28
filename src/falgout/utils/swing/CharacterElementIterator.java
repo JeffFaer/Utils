@@ -14,7 +14,6 @@ public class CharacterElementIterator extends ElementIterator {
     
     @Override
     protected Element getElement(int index) {
-        if (index < 0 || index >= getDocument().getLength()) { return null; }
         return getDocument().getCharacterElement(index);
     }
 }
