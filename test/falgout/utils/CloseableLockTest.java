@@ -10,14 +10,15 @@ import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
+import org.jukito.JukitoRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnitRunner.class)
+import com.google.inject.Inject;
+
+@RunWith(JukitoRunner.class)
 public class CloseableLockTest {
-    @Mock private Lock mock;
+    @Inject private Lock mock;
     
     @Test
     public void GettingAcquiresLock() {

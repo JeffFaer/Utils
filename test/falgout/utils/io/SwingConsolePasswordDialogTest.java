@@ -9,18 +9,22 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 
+import org.jukito.JukitoRunner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import com.google.inject.Inject;
 
 import falgout.utils.swing.SwingUtils;
 
+@RunWith(JukitoRunner.class)
 public class SwingConsolePasswordDialogTest {
-    private SwingConsole c;
+    @Inject private SwingConsole c;
     
     @Before
     public void init() {
-        c = new SwingConsole();
         c.writer().println("Getting password...");
     }
     

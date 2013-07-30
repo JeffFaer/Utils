@@ -19,6 +19,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 
+import com.google.inject.Inject;
+
 import falgout.utils.swing.ConsoleEvent;
 import falgout.utils.swing.ConsoleListener;
 import falgout.utils.swing.JConsole;
@@ -27,6 +29,7 @@ import falgout.utils.swing.SwingUtils;
 public class SwingConsole extends Console {
     private final JConsole console;
     
+    @Inject
     public SwingConsole() {
         try {
             console = SwingUtils.runOnEDT(new Callable<JConsole>() {

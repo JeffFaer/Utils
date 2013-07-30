@@ -7,19 +7,18 @@ import java.awt.Window;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
+import org.jukito.JukitoRunner;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import com.google.inject.Inject;
 
 import falgout.utils.swing.SwingUtils;
 
+@RunWith(JukitoRunner.class)
 public class SwingConsoleTest {
-    private SwingConsole c;
-    
-    @Before
-    public void init() {
-        c = new SwingConsole();
-    }
+    @Inject private SwingConsole c;
     
     @After
     public void after() throws InterruptedException, ExecutionException {

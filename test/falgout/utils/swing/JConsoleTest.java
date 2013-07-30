@@ -33,6 +33,7 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import org.jukito.JukitoRunner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -40,18 +41,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Matchers;
-import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
-@RunWith(MockitoJUnitRunner.class)
+import com.google.inject.Inject;
+
+@RunWith(JukitoRunner.class)
 public class JConsoleTest {
     private static Robot r;
     private JFrame frame;
-    private JConsole c;
     
-    @Mock private ConsoleListener listener;
+    private JConsole c;
+    @Inject private ConsoleListener listener;
     
     @BeforeClass
     public static void beforeClass() throws AWTException {

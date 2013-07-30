@@ -7,9 +7,22 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
+import org.jukito.JukitoModule;
+import org.jukito.JukitoRunner;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import com.google.inject.Inject;
+
+@RunWith(JukitoRunner.class)
 public class JLSMethodLocatorTest {
+    public static class A extends JukitoModule {
+        @Override
+        protected void configureTest() {
+            bind(MethodLocator.class).to(JLSMethodLocator.class);
+        }
+    }
+    
     private static final Class<?> CLAZZ = JLSMethodLocatorTest.class;
     private static final String NAME = "foo";
     
@@ -36,7 +49,7 @@ public class JLSMethodLocatorTest {
         }
     }
     
-    private static MethodLocator l = new JLSMethodLocator();
+    @Inject private MethodLocator l;
     
     @Test(expected = NoSuchMethodException.class)
     public void NonExistentMethodTest() throws AmbiguousDeclarationException, NoSuchMethodException {

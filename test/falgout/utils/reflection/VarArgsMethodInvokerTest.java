@@ -21,6 +21,7 @@ public class VarArgsMethodInvokerTest {
     private static final Class<?> CLAZZ = VarArgsMethodInvokerTest.class;
     private static final String NAME = "varArgs";
     private static final String NAME2 = "primitiveVarArgs";
+    
     private static final MethodInvoker INVOKER = MethodInvoker.getDefault();
     
     @Test
