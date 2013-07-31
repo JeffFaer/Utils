@@ -389,4 +389,13 @@ public class JConsoleTest {
             }
         });
     }
+    
+    @Test
+    public void WritingToInputSourceDoesntDisplayText() throws InvocationTargetException, InterruptedException,
+            IOException {
+        c.getInputSource().println("foobar");
+        
+        checkText("");
+        assertEquals("foobar", c.getInput().readLine());
+    }
 }

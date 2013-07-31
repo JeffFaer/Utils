@@ -255,6 +255,17 @@ public class JConsole extends JComponent {
     }
     
     /**
+     * Returns a {@code PrintWriter} wrapping the {@code PipedWriter} that is
+     * the source for the {@link #getInput() input}. Using this
+     * {@code PrintWriter} disables echoing onto the {@code JTextPane}.
+     * 
+     * @return The source for {@code getInput()}.
+     */
+    public PrintWriter getInputSource() {
+        return inputSource;
+    }
+    
+    /**
      * Returns a {@code PrintWriter} wrapping a
      * {@link falgout.utils.swing.StyledDocumentAppender} for this component.
      * This method is thread safe.
