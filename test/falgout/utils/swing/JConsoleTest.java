@@ -11,13 +11,10 @@ import static org.mockito.Mockito.verify;
 
 import java.awt.AWTException;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.Robot;
-import java.awt.event.InputEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
@@ -63,17 +60,17 @@ public class JConsoleTest {
     
     @Before
     public void init() throws InvocationTargetException, InterruptedException {
-        final WindowListener l = mock(WindowListener.class);
-        doAnswer(unlock()).when(l).windowOpened(Matchers.<WindowEvent> any());
+        final FocusListener l = mock(FocusListener.class);
+        doAnswer(unlock()).when(l).focusGained(Matchers.<FocusEvent> any());
         
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 c = new JConsole();
                 c.addConsoleListener(listener);
+                c.getTextPane().addFocusListener(l);
                 
                 frame = new JFrame("JConsoleTest");
-                frame.addWindowListener(l);
                 frame.setContentPane(c);
                 frame.pack();
                 frame.setLocation(300, 300);
@@ -85,44 +82,20 @@ public class JConsoleTest {
         synchronized (l) {
             l.wait();
         }
-        
-        giveFrameFocus();
     }
     
     private Answer<?> unlock() {
         return new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                WindowListener mock = (WindowListener) invocation.getMock();
+                Object mock = invocation.getMock();
                 synchronized (mock) {
                     mock.notify();
                 }
                 
-                WindowEvent e = (WindowEvent) invocation.getArguments()[0];
-                e.getWindow().removeWindowListener(mock);
                 return null;
             }
         };
-    }
-    
-    private void giveFrameFocus() throws InvocationTargetException, InterruptedException {
-        final AtomicReference<Point> location = new AtomicReference<>();
-        final AtomicReference<Dimension> size = new AtomicReference<>();
-        SwingUtilities.invokeAndWait(new Runnable() {
-            @Override
-            public void run() {
-                location.set(frame.getLocationOnScreen());
-                size.set(frame.getSize());
-            }
-        });
-        
-        Point middle = location.get();
-        middle.x += size.get().width / 2;
-        middle.y += size.get().height / 2;
-        
-        r.mouseMove(middle.x, middle.y);
-        r.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-        r.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
     }
     
     @After
