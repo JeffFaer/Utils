@@ -2,6 +2,7 @@ package falgout.utils.swing;
 
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doAnswer;
@@ -16,6 +17,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
@@ -329,9 +331,10 @@ public class JConsoleTest {
         checkText("foobar\n");
     }
     
-    @Test(expected = IllegalStateException.class)
-    public void CannotCreateExistingOutputStream() {
-        c.createWriter(JConsole.OUTPUT);
+    @Test
+    public void CannotCreateOverrideOutputStream() {
+        PrintWriter out = c.getWriter(JConsole.OUTPUT);
+        assertSame(out, c.createWriter(JConsole.OUTPUT));
     }
     
     @Test

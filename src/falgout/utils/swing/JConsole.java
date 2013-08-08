@@ -11,13 +11,16 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JComponent;
 import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.AbstractDocument;
@@ -188,7 +191,7 @@ public class JConsole extends JComponent {
     private final JTextPane textPane = new JTextPane();
     private final Style defaultStyle;
     
-    private final Map<String, PrintWriter> outputs = Collections.synchronizedMap(new LinkedHashMap<String, PrintWriter>());
+    private final ConcurrentMap<String, PrintWriter> outputs = new ConcurrentHashMap<>();
     private final BufferedReader input;
     private final PrintWriter inputSource;
     
@@ -279,13 +282,12 @@ public class JConsole extends JComponent {
     
     /**
      * Creates a new {@code StyledDocumentAppender} which will appear as the
-     * {@link #DEFAULT default Style}. This method is thread safe.
+     * {@link #DEFAULT default Style}. This method is thread safe. If the
+     * {@code PrintWriter} is created by another thread while this method is
+     * executing, that {@code PrintWriter} will be returned instead.
      * 
      * @param name The name of the writer
      * @return A {@code PrintWriter} that is safe for use off of the EDT.
-     * 
-     * @throws IllegalStateException If a writer already exists for
-     *         the {@code name}.
      */
     public PrintWriter createWriter(String name) {
         return createWriter(name, SimpleAttributeSet.EMPTY);
@@ -293,61 +295,77 @@ public class JConsole extends JComponent {
     
     /**
      * Creates a new {@code StyledDocumentAppender} and a matching {@code Style}
-     * which will have all of the given attributes. This method is thread safe.
+     * which will have all of the given attributes. This method is thread
+     * safe.If the {@code PrintWriter} is created by another thread while this
+     * method is
+     * executing, that {@code PrintWriter} will be returned instead.
      * 
      * @param name The name of the writer and {@code Style}
      * @param style The attributes for the {@code Style}. The parent of this
      *        {@code Style} will be the {@link #DEFAULT default Style}.
      * @return A {@code PrintWriter} that is safe for use off of the EDT.
-     * 
-     * @throws IllegalStateException If a writer already exists for the
-     *         {@code name}.
      */
     public PrintWriter createWriter(String name, AttributeSet style) {
-        checkName(name);
-        synchronized (outputs) {
-            checkName(name);
-            
-            createStyle(name, style);
-            PrintWriter w = new PrintWriter(new StyledDocumentAppender(textPane.getStyledDocument(), name), true);
-            outputs.put(name, w);
-            
-            return w;
-        }
+        PrintWriter w = outputs.get(name);
+        if (w != null) { return w; }
+        
+        w = new PrintWriter(new StyledDocumentAppender(textPane.getStyledDocument(), name), true);
+        createStyle(name, style);
+        PrintWriter check = outputs.putIfAbsent(name, w);
+        if (check != null) { return check; }
+        
+        return w;
     }
     
-    private Style createStyle(String name, AttributeSet style) {
-        Style s = textPane.addStyle(name, defaultStyle);
-        s.addAttributes(style);
-        // propagate changes to this Style to all text written with it.
-        s.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                Style s = (Style) e.getSource();
-                String name = s.getName();
-                StyledDocument d = textPane.getStyledDocument();
-                Iterator<Element> i = new CharacterElementIterator(d);
-                while (i.hasNext()) {
-                    Element elem = i.next();
-                    AttributeSet attrs = elem.getAttributes();
-                    String appliedStyle = (String) attrs.getAttribute(AttributeSet.NameAttribute);
+    private Style createStyle(final String name, final AttributeSet style) {
+        try {
+            // Styles are a part of Swing/AWT, they should probably only be
+            // manipulated on the EDT
+            return SwingUtils.runOnEDT(new Callable<Style>() {
+                @Override
+                public Style call() {
+                    // prevent Style from being overridden. Despite the
+                    // JavaDoc's assurances that the `name` must be unique, it
+                    // doesn't actually need to be.
+                    Style s = textPane.getStyle(name);
+                    if (s != null) { return s; }
                     
-                    // update any children of this Style as well
-                    do {
-                        if (attrs.containsAttribute(AttributeSet.NameAttribute, name)) {
-                            d.setCharacterAttributes(elem.getStartOffset(),
-                                    elem.getEndOffset() - elem.getStartOffset(), getStyle(appliedStyle), true);
-                            break;
+                    s = textPane.addStyle(name, defaultStyle);
+                    s.addAttributes(style);
+                    // propagate changes to this Style to all text written with
+                    // it.
+                    s.addChangeListener(new ChangeListener() {
+                        @Override
+                        public void stateChanged(ChangeEvent e) {
+                            Style s = (Style) e.getSource();
+                            String name = s.getName();
+                            StyledDocument d = textPane.getStyledDocument();
+                            Iterator<Element> i = new CharacterElementIterator(d);
+                            while (i.hasNext()) {
+                                Element elem = i.next();
+                                AttributeSet attrs = elem.getAttributes();
+                                String appliedStyle = (String) attrs.getAttribute(AttributeSet.NameAttribute);
+                                
+                                // update any children of this Style as well
+                                do {
+                                    if (attrs.containsAttribute(AttributeSet.NameAttribute, name)) {
+                                        d.setCharacterAttributes(elem.getStartOffset(),
+                                                elem.getEndOffset() - elem.getStartOffset(), getStyle(appliedStyle),
+                                                true);
+                                        break;
+                                    }
+                                } while ((attrs = attrs.getResolveParent()) != null);
+                            }
                         }
-                    } while ((attrs = attrs.getResolveParent()) != null);
+                    });
+                    return s;
                 }
-            }
-        });
-        return s;
-    }
-    
-    private void checkName(String name) {
-        if (outputs.containsKey(name)) { throw new IllegalStateException(name + " already exists."); }
+            });
+        } catch (ExecutionException e) {
+            throw new Error(e.getCause());
+        } catch (InterruptedException e) {
+            throw new Error(e);
+        }
     }
     
     public Style getStyle(String name) {
@@ -377,5 +395,18 @@ public class JConsole extends JComponent {
                 ((ConsoleListener) listeners[i + 1]).textWritten(e);
             }
         }
+    }
+    
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            
+            @Override
+            public void run() {
+                JConsole c = new JConsole();
+                Style in = c.getStyle(INPUT);
+                System.out.println(c.createStyle(INPUT, SimpleAttributeSet.EMPTY) == in);
+            }
+            
+        });
     }
 }
