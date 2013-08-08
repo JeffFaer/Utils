@@ -3,6 +3,7 @@ package falgout.utils;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 
 public class CloseableLock implements Lock, AutoCloseable {
     private final Lock l;
@@ -62,5 +63,21 @@ public class CloseableLock implements Lock, AutoCloseable {
         } else {
             return new CloseableLock(l);
         }
+    }
+    
+    public static CloseableLock read(ReadWriteLock l) {
+        return lock(l.readLock());
+    }
+    
+    public static CloseableLock write(ReadWriteLock l) {
+        return lock(l.writeLock());
+    }
+    
+    public static CloseableLock readInterruptibly(ReadWriteLock l) throws InterruptedException {
+        return lockInterruptibly(l.readLock());
+    }
+    
+    public static CloseableLock writeInterruptibly(ReadWriteLock l) throws InterruptedException {
+        return lockInterruptibly(l.writeLock());
     }
 }
